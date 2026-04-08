@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import br.com.srportto.contratocommand.domain.entities.Autorizacao;
-import br.com.srportto.contratocommand.entrypoint.contratosrest.ReceberAutorizacaoRequest;
+import br.com.srportto.contratocommand.entrypoint.contratosrest.CriarAutorizacaoRequest;
 import br.com.srportto.contratocommand.shared.exceptions.BusinessException;
 
 @Service
@@ -36,7 +36,7 @@ public class PixAutoAutorizacaoService {
    * @throws BusinessException Se as validações de negócio falharem
    */
   @Transactional
-  public Autorizacao criar(ReceberAutorizacaoRequest request) {
+  public Autorizacao criar(CriarAutorizacaoRequest request) {
     log.info("Iniciando criação de autorização para empresa: {}", request.idAutorizacaoEmpresa());
     
     // Validar regras de negócio

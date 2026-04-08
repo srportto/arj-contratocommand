@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import tools.jackson.databind.JsonNode;
 
-public record ReceberAutorizacaoRequest(
+public record CriarAutorizacaoRequest(
 
     @NotNull(message = "O campo 'dataFimVigencia' é obrigatório.") 
     LocalDate dataFimVigencia,
@@ -27,8 +27,8 @@ public record ReceberAutorizacaoRequest(
     @Max(value = 4, message = "O campo 'frequencia' deve ser menor ou igual a 4.") 
     Integer frequencia,
 
-    @NotNull(message = "O campo 'quantidadeDividasCiclo' é obrigatório.") 
-    @Min(value = 1, message = "O campo 'quantidadeDividasCiclo' deve ser maior ou igual a 1.") 
+    @NotNull(message = "O campo 'quantidadeDividasCiclo' é obrigatório.")
+    @Min(value = 1, message = "O campo 'quantidadeDividasCiclo' deve ser maior ou igual a 1.")
     Integer quantidadeDividasCiclo,
 
     @NotNull(message = "O campo 'indicadorUsoLimiteConta' é obrigatório.") 

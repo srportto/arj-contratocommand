@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import br.com.srportto.contratocommand.domain.entities.Autorizacao;
-import br.com.srportto.contratocommand.entrypoint.contratosrest.ReceberAutorizacaoRequest;
+import br.com.srportto.contratocommand.entrypoint.contratosrest.CriarAutorizacaoRequest;
 
 @Mapper(componentModel = "spring")
 public interface PixAutoAutorizacaoMapper {
@@ -27,13 +27,13 @@ public interface PixAutoAutorizacaoMapper {
   @Mapping(target = "indicadorTipoMensageria", ignore = true) // Será definido no @AfterMapping
   @Mapping(target = "cancelamento", ignore = true) // Será null na criação
   @Mapping(target = "metadados", ignore = true) // Será convertido no @AfterMapping
-  Autorizacao toDomain(ReceberAutorizacaoRequest request);
+  Autorizacao toDomain(CriarAutorizacaoRequest request);
 
   /**
    * Define valores padrão e conversões customizadas após o mapeamento automático.
    */
   @AfterMapping
-  default void afterMapping(ReceberAutorizacaoRequest request, @MappingTarget Autorizacao autorizacao) {
+  default void afterMapping(CriarAutorizacaoRequest request, @MappingTarget Autorizacao autorizacao) {
     // Valores defaults para criação de nova autorização
     autorizacao.setStatus(1); // 1 = ATIVA
     autorizacao.setMotivoStatus("Autorização criada com sucesso");

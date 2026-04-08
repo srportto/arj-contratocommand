@@ -13,7 +13,8 @@ import java.util.List;
 
 import br.com.srportto.contratocommand.application.pixauto.PixAutoAutorizacaoService;
 import br.com.srportto.contratocommand.domain.entities.Autorizacao;
-import br.com.srportto.contratocommand.entrypoint.contratosrest.ReceberAutorizacaoRequest;
+import br.com.srportto.contratocommand.entrypoint.contratosrest.AutorizacaoCompletaResponseDto;
+import br.com.srportto.contratocommand.entrypoint.contratosrest.CriarAutorizacaoRequest;
 import jakarta.validation.Valid;
 
 @RestController
@@ -32,12 +33,17 @@ public class AutorizacaoController {
   }
 
   @GetMapping("/ativas")
-  public ResponseEntity<List<Autorizacao>> listarAtivas() {
-    return ResponseEntity.ok(service.listarAtivas());
+  public ResponseEntity<List<AutorizacaoCompletaResponseDto>> listarAtivas() {
+    List<AutorizacaoCompletaResponseDto> autorizacoes = service.listarAtivas()
+        .stream()
+        .map(AutorizacaoCompletaResponseDto::from)
+        .toList();
+
+    return ResponseEntity.ok(autorizacoes);
   }
 
   @PostMapping
-  public ResponseEntity<Autorizacao> insert(@RequestBody @Valid ReceberAutorizacaoRequest requestRecord) {
+  public ResponseEntity<AutorizacaoCompletaResponseDto> insert(@RequestBody @Valid CriarAutorizacaoRequest requestRecord) {
     Autorizacao autorizada = service.criar(requestRecord);
 
     URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -45,7 +51,7 @@ public class AutorizacaoController {
             .buildAndExpand(autorizada.getIdAutorizacao())
             .toUri();
 
-    return ResponseEntity.created(uri).body(autorizada);
+    return ResponseEntity.created(uri).body(AutorizacaoCompletaResponseDto.from(autorizada));
   }
 
 
