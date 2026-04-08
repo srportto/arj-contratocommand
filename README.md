@@ -163,8 +163,21 @@ A aplicação estará disponível em: `http://localhost:8080`
 ### Autorização
 
 - **GET** `/api/autorizacao/olaMundo` - Endpoint de teste
-- **POST** `/api/autorizacao` - Criar nova autorização (em desenvolvimento)
-- **GET** `/api/autorizacao` - Listar autorizações (em desenvolvimento)
+- **GET** `/api/autorizacao/ativas` - Listar autorizações ativas (retorna `AutorizacaoCompletaResponseDto`)
+- **POST** `/api/autorizacao` - Criar nova autorização com validação de campo mínimo 1 em `quantidadeDividasCiclo` (retorna `AutorizacaoCompletaResponseDto`)
+
+## 📝 Alterações Recentes
+
+### v0.0.1 - Validações e DTO Completa (04/2026)
+
+#### ✅ Validações Implementadas
+- **Campo `quantidadeDividasCiclo`**: Agora nega requisições com valores menores que 1 via `@Min(value = 1)`
+
+#### 📤 Resposta Completa da Entidade
+- Criada a classe `AutorizacaoCompletaResponseDto` como DTO simples com Lombok (`@Data`, `@Builder`, `@NoArgsConstructor`, `@AllArgsConstructor`)
+- **Mapeamento de Metadados**: A coluna `metadados` do banco (tipo `JSONB`) é parseada para `JsonNode` e retornada ao client em formato JSON válido
+- Método factory `from(Autorizacao)` para conversão automática com builder pattern
+- Endpoints POST e GET retornam representação completa via `AutorizacaoCompletaResponseDto`
 
 ## ⚙️ Configurações
 

@@ -7,60 +7,70 @@ import java.util.UUID;
 
 import br.com.srportto.contratocommand.domain.entities.Autorizacao;
 import br.com.srportto.contratocommand.domain.entities.Cancelamento;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.JsonNodeFactory;
 
-public record AutorizacaoCompletaResponseDto(
-    UUID idAutorizacao,
-    LocalDate dataFimVigencia,
-    Integer status,
-    String motivoStatus,
-    LocalDate dataInicioVigencia,
-    LocalDateTime dataHoraInclusao,
-    LocalDateTime dataHoraUltimaAtualizacao,
-    BigDecimal valorAutorizacao,
-    String idAutorizacaoEmpresa,
-    BigDecimal valorLimite,
-    Short frequenciaPagamento,
-    Short quantidadeDividasCiclo,
-    Short indicadorUsoLimiteConta,
-    Short indicadorTipoMensageria,
-    String codigoCanalContratacao,
-    String descricao,
-    UUID idUnicoContaContratante,
-    UUID idPessoaPagadora,
-    UUID idPessoaDevedora,
-    UUID idPessoaRecebedora,
-    Cancelamento cancelamento,
-    JsonNode metadados) {
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class AutorizacaoCompletaResponseDto {
+
+  private UUID idAutorizacao;
+  private LocalDate dataFimVigencia;
+  private Integer status;
+  private String motivoStatus;
+  private LocalDate dataInicioVigencia;
+  private LocalDateTime dataHoraInclusao;
+  private LocalDateTime dataHoraUltimaAtualizacao;
+  private BigDecimal valorAutorizacao;
+  private String idAutorizacaoEmpresa;
+  private BigDecimal valorLimite;
+  private Short frequenciaPagamento;
+  private Short quantidadeDividasCiclo;
+  private Short indicadorUsoLimiteConta;
+  private Short indicadorTipoMensageria;
+  private String codigoCanalContratacao;
+  private String descricao;
+  private UUID idUnicoContaContratante;
+  private UUID idPessoaPagadora;
+  private UUID idPessoaDevedora;
+  private UUID idPessoaRecebedora;
+  private Cancelamento cancelamento;
+  private JsonNode metadados;
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
   public static AutorizacaoCompletaResponseDto from(Autorizacao autorizacao) {
-    return new AutorizacaoCompletaResponseDto(
-        autorizacao.getIdAutorizacao(),
-        autorizacao.getDataFimVigencia(),
-        autorizacao.getStatus(),
-        autorizacao.getMotivoStatus(),
-        autorizacao.getDataInicioVigencia(),
-        autorizacao.getDataHoraInclusao(),
-        autorizacao.getDataHoraUltimaAtualizacao(),
-        autorizacao.getValorAutorizacao(),
-        autorizacao.getIdAutorizacaoEmpresa(),
-        autorizacao.getValorLimite(),
-        autorizacao.getFrequenciaPagamento(),
-        autorizacao.getQuantidadeDividasCiclo(),
-        autorizacao.getIndicadorUsoLimiteConta(),
-        autorizacao.getIndicadorTipoMensageria(),
-        autorizacao.getCodigoCanalContratacao(),
-        autorizacao.getDescricao(),
-        autorizacao.getIdUnicoContaContratante(),
-        autorizacao.getIdPessoaPagadora(),
-        autorizacao.getIdPessoaDevedora(),
-        autorizacao.getIdPessoaRecebedora(),
-        autorizacao.getCancelamento(),
-        parseMetadados(autorizacao.getMetadados()));
+    return AutorizacaoCompletaResponseDto.builder()
+        .idAutorizacao(autorizacao.getIdAutorizacao())
+        .dataFimVigencia(autorizacao.getDataFimVigencia())
+        .status(autorizacao.getStatus())
+        .motivoStatus(autorizacao.getMotivoStatus())
+        .dataInicioVigencia(autorizacao.getDataInicioVigencia())
+        .dataHoraInclusao(autorizacao.getDataHoraInclusao())
+        .dataHoraUltimaAtualizacao(autorizacao.getDataHoraUltimaAtualizacao())
+        .valorAutorizacao(autorizacao.getValorAutorizacao())
+        .idAutorizacaoEmpresa(autorizacao.getIdAutorizacaoEmpresa())
+        .valorLimite(autorizacao.getValorLimite())
+        .frequenciaPagamento(autorizacao.getFrequenciaPagamento())
+        .quantidadeDividasCiclo(autorizacao.getQuantidadeDividasCiclo())
+        .indicadorUsoLimiteConta(autorizacao.getIndicadorUsoLimiteConta())
+        .indicadorTipoMensageria(autorizacao.getIndicadorTipoMensageria())
+        .codigoCanalContratacao(autorizacao.getCodigoCanalContratacao())
+        .descricao(autorizacao.getDescricao())
+        .idUnicoContaContratante(autorizacao.getIdUnicoContaContratante())
+        .idPessoaPagadora(autorizacao.getIdPessoaPagadora())
+        .idPessoaDevedora(autorizacao.getIdPessoaDevedora())
+        .idPessoaRecebedora(autorizacao.getIdPessoaRecebedora())
+        .cancelamento(autorizacao.getCancelamento())
+        .metadados(parseMetadados(autorizacao.getMetadados()))
+        .build();
   }
 
   private static JsonNode parseMetadados(String metadados) {
