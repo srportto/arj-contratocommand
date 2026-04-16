@@ -31,6 +31,12 @@ public class Autorizacao {
   @Column(name = "id_autorizacao", nullable = false, unique = true, length = 36)
   private UUID idAutorizacao;
 
+
+  //passa a ser opcional no request, quando nao informada usar o campo canal para decidir o que persisir na base de dados
+  //quando canal igual C1 , salvar  9999-01-01
+  //quando canal igual C2 , salvar  9999-04-01
+  //quando canal igual C3 , salvar  9999-07-01
+  //quando canal igual C4 , salvar  9999-10-01
   @Column(name = "data_fim_vigencia", nullable = false)
   private LocalDate dataFimVigencia;
 

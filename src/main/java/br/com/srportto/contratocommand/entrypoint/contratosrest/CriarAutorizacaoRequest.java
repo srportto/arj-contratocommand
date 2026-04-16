@@ -11,7 +11,6 @@ import tools.jackson.databind.JsonNode;
 
 public record CriarAutorizacaoRequest(
 
-    @NotNull(message = "O campo 'dataFimVigencia' é obrigatório.") 
     LocalDate dataFimVigencia,
 
     @NotNull(message = "O campo 'status' é obrigatório.") 
