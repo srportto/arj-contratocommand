@@ -1,0 +1,205 @@
+CREATE EXTENSION IF NOT EXISTS pg_partman;
+
+CREATE EXTENSION IF NOT EXISTS pg_cron;
+
+select * from autorizacoes a ;
+
+
+CREATE INDEX idx_metadados_gin ON autorizacoes USING GIN (metadados);
+
+select * from autorizacoes a 
+where a.metadados @> '{"teste": false}'
+
+select * from groups;
+
+-- eh possivel usar JSONB como tipo de dados do metadado tambem
+
+CREATE TABLE autorizacoes (
+    id_autorizacao UUID NOT NULL,
+    data_fim_vigencia DATE NOT NULL, -- Coluna de partição deve ser NOT NULL
+    status INT NOT null,
+    motivo_status TEXT, --- pendente
+    data_inicio_vigencia DATE,
+    data_hora_inclusao timestamp  not null,
+    data_hora_ultima_atlz timestamp  not null,
+    valor NUMERIC(17, 2), 
+    id_autorizacao_empresa TEXT,
+    valor_limite NUMERIC(17, 2),
+    frequencia INT CHECK (frequencia IN (1, 2, 3, 4)),
+    quantidade_dividas_ciclo INT,
+    indicador_uso_limite_conta INT,
+    indicador_tipo_mensageria INT,
+    codigo_canal_contratacao TEXT NOT NULL,
+    descricao TEXT,
+    id_unico_conta_contratante UUID,
+    id_pessoa_pagadora UUID,
+    id_pessoa_devedora UUID,
+    id_pessoa_recebedora UUID,    
+    codigo_canal_cancelamento TEXT,
+    id_pessoa_cancelamento UUID,
+    data_hora_cancelamento timestamp,
+    motivo_cancelamento TEXT,    
+    metadados JSON,    
+    -- A PK precisa conter a coluna de particionamento
+    CONSTRAINT pk_autorizacoees PRIMARY KEY (id_autorizacao, data_fim_vigencia)
+   ) PARTITION BY RANGE (data_fim_vigencia);
+
+
+-----------------------------------------------------------------------------
+--- Para criar particoes (1830 eh +/- 5 anos em qtde de dias)
+-----------------------------------------------------------------------------
+SELECT public.create_parent(
+    p_parent_table := 'public.autorizacoes',
+    p_control := 'data_fim_vigencia',
+    p_type := 'range',
+    p_interval := '1 day',
+    p_premake := 365,
+    p_start_partition := '2026-01-01' 
+);
+
+
+SELECT public.create_parent(
+    p_parent_table := 'public.autorizacoes',
+    p_control := 'data_fim_vigencia',
+    p_type := 'range',
+    p_interval := '1 month',
+    p_premake := 12,
+    p_start_partition := '9999-01-01' 
+);
+
+
+-- Janeiro
+CREATE TABLE autorizacoes_9999_01 PARTITION OF public.autorizacoes
+    FOR VALUES FROM ('9999-01-01') TO ('9999-02-01');
+
+-- Fevereiro
+CREATE TABLE autorizacoes_9999_02 PARTITION OF public.autorizacoes
+    FOR VALUES FROM ('9999-02-01') TO ('9999-03-01');
+
+-- Março
+CREATE TABLE autorizacoes_9999_03 PARTITION OF public.autorizacoes
+    FOR VALUES FROM ('9999-03-01') TO ('9999-04-01');
+
+-- Abril
+CREATE TABLE autorizacoes_9999_04 PARTITION OF public.autorizacoes
+    FOR VALUES FROM ('9999-04-01') TO ('9999-05-01');
+
+-- Maio
+CREATE TABLE autorizacoes_9999_05 PARTITION OF public.autorizacoes
+    FOR VALUES FROM ('9999-05-01') TO ('9999-06-01');
+
+-- Junho
+CREATE TABLE autorizacoes_9999_06 PARTITION OF public.autorizacoes
+    FOR VALUES FROM ('9999-06-01') TO ('9999-07-01');
+
+-- Julho
+CREATE TABLE autorizacoes_9999_07 PARTITION OF public.autorizacoes
+    FOR VALUES FROM ('9999-07-01') TO ('9999-08-01');
+
+-- Agosto
+CREATE TABLE autorizacoes_9999_08 PARTITION OF public.autorizacoes
+    FOR VALUES FROM ('9999-08-01') TO ('9999-09-01');
+
+-- Setembro
+CREATE TABLE autorizacoes_9999_09 PARTITION OF public.autorizacoes
+    FOR VALUES FROM ('9999-09-01') TO ('9999-10-01');
+
+-- Outubro
+CREATE TABLE autorizacoes_9999_10 PARTITION OF public.autorizacoes
+    FOR VALUES FROM ('9999-10-01') TO ('9999-11-01');
+
+-- Novembro
+CREATE TABLE autorizacoes_9999_11 PARTITION OF public.autorizacoes
+    FOR VALUES FROM ('9999-11-01') TO ('9999-12-01');
+
+-- Dezembro (Termina no primeiro dia do ano seguinte)
+CREATE TABLE autorizacoes_9999_12 PARTITION OF public.autorizacoes
+    FOR VALUES FROM ('9999-12-01') TO ('10000-01-01');
+
+
+-----------------------------------------------------------------------------
+--- Listar particoes todas as particoes 
+-----------------------------------------------------------------------------
+SELECT * FROM public.show_partitions('public.autorizacoes');
+
+
+
+
+
+----------------------------------------------------------------------------------------------------
+--- Esta query vai retornar a tabela pai (no nível 0) e todas as suas partições (no nível 1). 
+--- O campo isleaf será true para as partições reais que guardam os dados.
+-----------------------------------------------------------------------------------------------------
+SELECT 
+    relid::regclass AS nome_da_particao,
+    isleaf AS e_particao_folha,
+    level AS nivel_na_arvore
+FROM pg_partition_tree('public.autorizacoes');
+
+
+
+---------------------------------------------------------------------------
+--- Ver onde comeca e onde termina as particoes que podem receber dados
+---------------------------------------------------------------------------
+
+SELECT
+    parent.relname AS tabela_pai,
+    child.relname AS nome_da_particao,
+    pg_get_expr(child.relpartbound, child.oid) AS limites_da_particao
+FROM pg_inherits
+JOIN pg_class parent ON pg_inherits.inhparent = parent.oid
+JOIN pg_class child ON pg_inherits.inhrelid = child.oid
+WHERE parent.relname = 'autorizacoes';
+
+-------------------------------------------------------------------------------
+--- Pra validar se dados estao caindo na particao defalt
+-------------------------------------------------------------------------------
+SELECT * FROM public.check_default();
+
+
+-------------------------------------------------------------------------------
+--- Validar se meu select na tabela esta indo nas particoes corretas e nao fazendo o table scan
+-------------------------------------------------------------------------------
+EXPLAIN SELECT * FROM autorizacoes WHERE data_fim_vigencia = '9999-10-01';
+
+
+
+-------------------------------------------------------------------------------
+--- Verificar data da ultima manutencao agendada
+-------------------------------------------------------------------------------
+SELECT parent_table, maintenance_last_run
+FROM public.part_config;
+
+
+-----------------------------------------------------------------------------
+--- Para atualizar a tabela de contrle de particoes com a configuracao de expurgo
+-----------------------------------------------------------------------------
+UPDATE public.part_config 
+SET infinite_time_partitions =true,
+    retention = '1 months', 
+    retention_keep_table=false
+WHERE parent_table = 'public.autorizacoes';
+
+--		A coluna RETENTION_KEEP_TABLE na tabela part_config do pg_partman é um valor booleano que determina o que acontece com uma partição quando ela atinge o limite da sua política de retenção.--Aqui estão as duas funções principais:
+--			TRUE (Padrão) =>  A partição antiga é apenas desanexada (detached/uninherited). Ela deixa de fazer parte da tabela pai, mas permanece no banco de dados como uma tabela independente e vazia de conexões lógicas com a estrutura particionada
+--			FALSE         =>  A partição é removida fisicamente (comando DROP TABLE) do disco e do banco de dados, liberando o espaço permanentemente.
+
+
+
+-----------------------------------------------------------------------------
+--- Criando a automacao via pg_cron para rodar o job de manutencao do pg_partman(run_maintenance())
+-----------------------------------------------------------------------------
+-- 	Cron do scheduler para rodar de 10 em 10 min
+SELECT cron.schedule('job_manutencao_diaria_via-partman-maintenance', '*/10 * * * *', 'SELECT public.run_maintenance()');
+
+
+
+-----------------------------------------------------------------------------
+--- Para conferir resultados das execucoes
+-----------------------------------------------------------------------------
+SELECT * FROM cron.job_run_details;
+
+
+
+
+
