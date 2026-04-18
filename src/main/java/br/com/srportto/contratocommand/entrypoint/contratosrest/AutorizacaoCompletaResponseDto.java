@@ -48,7 +48,7 @@ public class AutorizacaoCompletaResponseDto {
 
   public static AutorizacaoCompletaResponseDto from(Autorizacao autorizacao) {
     return AutorizacaoCompletaResponseDto.builder()
-        .idAutorizacao(autorizacao.getIdAutorizacao())
+        .idAutorizacao(autorizacao.getIdAutorizacao().getIdAutorizacao())
         .dataFimVigencia(autorizacao.getDataFimVigencia())
         .status(autorizacao.getStatus())
         .motivoStatus(autorizacao.getMotivoStatus())

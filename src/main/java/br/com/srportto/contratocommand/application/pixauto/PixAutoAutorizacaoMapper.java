@@ -9,10 +9,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import br.com.srportto.contratocommand.domain.entities.Autorizacao;
+import br.com.srportto.contratocommand.domain.entities.IdAutorizacao;
+import br.com.srportto.contratocommand.domain.utilities.IdContaUUIDPartitionDistributor;
+import br.com.srportto.contratocommand.domain.utilities.ReversibleUUIDv7;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.CriarAutorizacaoRequest;
 
 @Mapper(componentModel = "spring")
 public interface PixAutoAutorizacaoMapper {
+ 
 
   @Mapping(source = "valor", target = "valorAutorizacao")
   @Mapping(source = "frequencia", target = "frequenciaPagamento")
@@ -38,7 +42,26 @@ public interface PixAutoAutorizacaoMapper {
    */
   @AfterMapping
   default void afterMapping(CriarAutorizacaoRequest request, @MappingTarget Autorizacao autorizacao) {
-    // Valores defaults para criação de nova autorização
+    
+
+    //preenchimento PK da entidade (idAutorizacao + particao)
+    var idUnicoContaContratante = autorizacao.getIdUnicoContaContratante();
+    System.out.println("ID Único Conta Contratante: " + idUnicoContaContratante); // Log para verificar o valor
+
+    var idParticaoConta = IdContaUUIDPartitionDistributor.getPartitionFast(idUnicoContaContratante);  
+  System.out.println("ID Partição Conta gerado: " + idParticaoConta); // Log para verificar o valor
+
+
+    var idAutorizacao = ReversibleUUIDv7.generate(idParticaoConta);
+    System.out.println("UUID Autorização gerado: " + idAutorizacao); // Log para verificar o valor
+    System.out.println("ID Partição Conta extraído do UUID: " + ReversibleUUIDv7.extract(idAutorizacao)); // Log para verificar a extração da partição
+
+    // Inicializar IdAutorizacao antes de usar
+    autorizacao.setIdAutorizacao(new IdAutorizacao());
+    autorizacao.getIdAutorizacao().setIdAutorizacao(idAutorizacao);
+    autorizacao.getIdAutorizacao().setIdParticaoConta(idParticaoConta);
+
+    // Preenchendo demais valores padroes para criação de nova autorização
     autorizacao.setStatus(1); // 1 = ATIVA
     autorizacao.setMotivoStatus("Autorização criada com sucesso");
     autorizacao.setDataInicioVigencia(LocalDate.now());

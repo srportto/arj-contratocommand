@@ -128,6 +128,7 @@ public class PixAutoAutorizacaoService {
       case "C2" -> LocalDate.of(9999, 4, 1); // abril
       case "C3" -> LocalDate.of(9999, 7, 1); // julho
       case "C4" -> LocalDate.of(9999, 10, 1); // outubro
+      case "C9" -> LocalDate.of(9999, 12, 31); // dezembro
       default -> LocalDate.of(9999, 1, 1); // Padrão: C1
     };
   }
