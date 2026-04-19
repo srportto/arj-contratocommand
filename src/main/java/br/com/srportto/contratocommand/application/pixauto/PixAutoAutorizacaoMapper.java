@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 
 import br.com.srportto.contratocommand.domain.entities.Autorizacao;
 import br.com.srportto.contratocommand.domain.entities.IdAutorizacao;
+import br.com.srportto.contratocommand.domain.utilities.CalculaParticaoExpurgo;
 import br.com.srportto.contratocommand.domain.utilities.IdContaUUIDPartitionDistributor;
 import br.com.srportto.contratocommand.domain.utilities.ReversibleUUIDv7;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.CriarAutorizacaoRequest;
@@ -55,6 +56,9 @@ public interface PixAutoAutorizacaoMapper {
     var idAutorizacao = ReversibleUUIDv7.generate(idParticaoConta);
     System.out.println("UUID Autorização gerado: " + idAutorizacao); // Log para verificar o valor
     System.out.println("ID Partição Conta extraído do UUID: " + ReversibleUUIDv7.extract(idAutorizacao)); // Log para verificar a extração da partição
+
+    var dataFinalizacao = LocalDate.now();
+    System.out.println("Partição de expurgo que seria selecionada para esse momento em caso de finalizacao: " + CalculaParticaoExpurgo.obterParticaoExpurgo(dataFinalizacao)); // Log para verificar a partição de expurgo atual
 
     // Inicializar IdAutorizacao antes de usar
     autorizacao.setIdAutorizacao(new IdAutorizacao());

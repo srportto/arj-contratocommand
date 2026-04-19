@@ -2,7 +2,13 @@
     // veja mais em: https://code.visualstudio.com/docs/java/java-debugging
     "version": "0.2.0",
     "configurations": [
-        
+        {
+            "type": "java",
+            "name": "GeraDatasPorParticao",
+            "request": "launch",
+            "mainClass": "br.com.srportto.contratocommand.domain.utilities.GeraDatasPorParticao",
+            "projectName": "contratocommand"
+        },
         {
             "type": "java",
             "name": "Debug (Launch) - Current File",
@@ -31,8 +37,6 @@
             "request": "launch",
             "cwd": "${workspaceFolder}",
             "mainClass": "br.com.srportto.contratocommand.ContratocommandApplication",
-            
-            // localhost environment variables
             "env": {
                 "DB_NAME": "db-csp-postgres",
                 "DB_USER_NAME": "docker",
