@@ -10,14 +10,14 @@ import java.time.LocalDateTime;
 
 import br.com.srportto.contratocommand.domain.entities.Autorizacao;
 import br.com.srportto.contratocommand.domain.entities.IdAutorizacao;
-import br.com.srportto.contratocommand.domain.utilities.CalculaParticaoExpurgo;
+import br.com.srportto.contratocommand.domain.utilities.ControleExpurgoAutorizacao;
 import br.com.srportto.contratocommand.domain.utilities.IdContaUUIDPartitionDistributor;
 import br.com.srportto.contratocommand.domain.utilities.ReversibleUUIDv7;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.CriarAutorizacaoRequest;
 
 @Mapper(componentModel = "spring")
 public interface PixAutoAutorizacaoMapper {
- 
+
 
   @Mapping(source = "valor", target = "valorAutorizacao")
   @Mapping(source = "frequencia", target = "frequenciaPagamento")
@@ -47,18 +47,25 @@ public interface PixAutoAutorizacaoMapper {
 
     //preenchimento PK da entidade (idAutorizacao + particao)
     var idUnicoContaContratante = autorizacao.getIdUnicoContaContratante();
-    System.out.println("ID Único Conta Contratante: " + idUnicoContaContratante); // Log para verificar o valor
+    System.out.println("ID unico Conta Contratante: " + idUnicoContaContratante); // Log para verificar o valor
 
     var idParticaoConta = IdContaUUIDPartitionDistributor.getPartitionFast(idUnicoContaContratante);  
-  System.out.println("ID Partição Conta gerado: " + idParticaoConta); // Log para verificar o valor
+  System.out.println("ID Particao Conta gerado: " + idParticaoConta); // Log para verificar o valor
 
 
     var idAutorizacao = ReversibleUUIDv7.generate(idParticaoConta);
-    System.out.println("UUID Autorização gerado: " + idAutorizacao); // Log para verificar o valor
-    System.out.println("ID Partição Conta extraído do UUID: " + ReversibleUUIDv7.extract(idAutorizacao)); // Log para verificar a extração da partição
+    System.out.println("UUID Autorizacao gerado: " + idAutorizacao); // Log para verificar o valor
+    System.out.println("ID Particao Conta extraído do UUID: " + ReversibleUUIDv7.extract(idAutorizacao)); // Log para verificar a extração da partição
 
+    //simulação de cálculo da partição de expurgo para o momento atual, para fins de validação do processo de geração do ID e partição
     var dataFinalizacao = LocalDate.now();
-    System.out.println("Partição de expurgo que seria selecionada para esse momento em caso de finalizacao: " + CalculaParticaoExpurgo.obterParticaoExpurgo(dataFinalizacao)); // Log para verificar a partição de expurgo atual
+    var particaoExpurgo = ControleExpurgoAutorizacao.obterParticaoExpurgoWrite(dataFinalizacao);
+    System.out.println("Particao de expurgo que seria selecionada para esse momento em caso de finalizacao: " + particaoExpurgo); // Log para verificar a partição de expurgo atual
+
+    //var dataReferenciaCalculoParticaoExpurgo = LocalDate.now().plusWeeks(1); // Simula uma data de referência para cálculo de expurgo 1 semana à frente
+    var dataReferenciaCalculoParticaoExpurgo = LocalDate.now();
+    var proximaParticaoExpurgo = ControleExpurgoAutorizacao.obterParticaoExpurgoDrop(dataReferenciaCalculoParticaoExpurgo);
+    System.out.println("Proxima particao de expurgo: " + proximaParticaoExpurgo); // Log para verificar a proxima partição de expurgo
 
     // Inicializar IdAutorizacao antes de usar
     autorizacao.setIdAutorizacao(new IdAutorizacao());
@@ -67,7 +74,7 @@ public interface PixAutoAutorizacaoMapper {
 
     // Preenchendo demais valores padroes para criação de nova autorização
     autorizacao.setStatus(1); // 1 = ATIVA
-    autorizacao.setMotivoStatus("Autorização criada com sucesso");
+    autorizacao.setMotivoStatus("Autorizacao criada com sucesso");
     autorizacao.setDataInicioVigencia(LocalDate.now());
     
     

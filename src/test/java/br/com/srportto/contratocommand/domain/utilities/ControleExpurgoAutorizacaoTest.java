@@ -12,15 +12,15 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-@DisplayName("Testes da classe CalculaParticaoExpurgo")
-class CalculaParticaoExpurgoTest {
+@DisplayName("Testes da classe ControleExpurgoAutorizacao")
+class ControleExpurgoAutorizacaoTest {
 
   private static final LocalDate EPOCH_DAY = LocalDate.ofEpochDay(0); // 1970-01-01
 
   @Test
   @DisplayName("Deve retornar 900 para a data de época (1970-01-01)")
   void testEpochDay() {
-    int resultado = CalculaParticaoExpurgo.obterParticaoExpurgo(EPOCH_DAY);
+    int resultado = ControleExpurgoAutorizacao.obterParticaoExpurgoWrite(EPOCH_DAY);
     assertEquals(900, resultado);
   }
 
@@ -28,7 +28,7 @@ class CalculaParticaoExpurgoTest {
   @DisplayName("Deve retornar 901 para 7 dias após a época")
   void testOneWeekAfterEpoch() {
     LocalDate umaSemanaApos = EPOCH_DAY.plusWeeks(1);
-    int resultado = CalculaParticaoExpurgo.obterParticaoExpurgo(umaSemanaApos);
+    int resultado = ControleExpurgoAutorizacao.obterParticaoExpurgoWrite(umaSemanaApos);
     assertEquals(901, resultado);
   }
 
@@ -36,7 +36,7 @@ class CalculaParticaoExpurgoTest {
   @DisplayName("Deve retornar 999 para 99 semanas após a época")
   void test99WeeksAfterEpoch() {
     LocalDate noventaNoveSemanasApos = EPOCH_DAY.plusWeeks(99);
-    int resultado = CalculaParticaoExpurgo.obterParticaoExpurgo(noventaNoveSemanasApos);
+    int resultado = ControleExpurgoAutorizacao.obterParticaoExpurgoWrite(noventaNoveSemanasApos);
     assertEquals(999, resultado);
   }
 
@@ -44,7 +44,7 @@ class CalculaParticaoExpurgoTest {
   @DisplayName("Deve retornar 900 para 100 semanas após a época (ciclo volta para 0)")
   void test100WeeksAfterEpoch() {
     LocalDate cem = EPOCH_DAY.plusWeeks(100);
-    int resultado = CalculaParticaoExpurgo.obterParticaoExpurgo(cem);
+    int resultado = ControleExpurgoAutorizacao.obterParticaoExpurgoWrite(cem);
     assertEquals(900, resultado);
   }
 
@@ -52,7 +52,7 @@ class CalculaParticaoExpurgoTest {
   @DisplayName("Deve retornar 950 para 50 semanas após a época")
   void test50WeeksAfterEpoch() {
     LocalDate cinquentaSemanasApos = EPOCH_DAY.plusWeeks(50);
-    int resultado = CalculaParticaoExpurgo.obterParticaoExpurgo(cinquentaSemanasApos);
+    int resultado = ControleExpurgoAutorizacao.obterParticaoExpurgoWrite(cinquentaSemanasApos);
     assertEquals(950, resultado);
   }
 
@@ -61,7 +61,7 @@ class CalculaParticaoExpurgoTest {
   @DisplayName("Deve calcular corretamente a partição para várias semanas")
   void testMultiplasSemanasComPartição(int semanas) {
     LocalDate data = EPOCH_DAY.plusWeeks(semanas);
-    int resultado = CalculaParticaoExpurgo.obterParticaoExpurgo(data);
+    int resultado = ControleExpurgoAutorizacao.obterParticaoExpurgoWrite(data);
     
     int partição = (semanas % 100) + 900;
     assertEquals(partição, resultado, 
@@ -76,7 +76,7 @@ class CalculaParticaoExpurgoTest {
     // Testa 1000 semanas diferentes para garantir cobertura completa do range 900-999
     for (int semanas = 0; semanas < 1000; semanas++) {
       LocalDate data = EPOCH_DAY.plusWeeks(semanas);
-      int particao = CalculaParticaoExpurgo.obterParticaoExpurgo(data);
+      int particao = ControleExpurgoAutorizacao.obterParticaoExpurgoWrite(data);
       particoesGeradas.add(particao);
     }
 
@@ -102,7 +102,7 @@ class CalculaParticaoExpurgoTest {
     };
 
     for (LocalDate data : datas) {
-      int resultado = CalculaParticaoExpurgo.obterParticaoExpurgo(data);
+      int resultado = ControleExpurgoAutorizacao.obterParticaoExpurgoWrite(data);
       assertTrue(resultado >= 900 && resultado <= 999, 
           "Resultado " + resultado + " para data " + data + " está fora do range [900, 999]");
     }
@@ -114,7 +114,7 @@ class CalculaParticaoExpurgoTest {
     // Testa 300 semanas para validar a fórmula
     for (int semanas = 0; semanas < 300; semanas++) {
       LocalDate data = EPOCH_DAY.plusWeeks(semanas);
-      int resultado = CalculaParticaoExpurgo.obterParticaoExpurgo(data);
+      int resultado = ControleExpurgoAutorizacao.obterParticaoExpurgoWrite(data);
       
       int esperado = (semanas % 100) + 900;
       assertEquals(esperado, resultado, 
@@ -127,11 +127,75 @@ class CalculaParticaoExpurgoTest {
   void testConsistênciaParaMesmaData() {
     LocalDate data = LocalDate.of(2026, 4, 18);
     
-    int resultado1 = CalculaParticaoExpurgo.obterParticaoExpurgo(data);
-    int resultado2 = CalculaParticaoExpurgo.obterParticaoExpurgo(data);
-    int resultado3 = CalculaParticaoExpurgo.obterParticaoExpurgo(data);
+    int resultado1 = ControleExpurgoAutorizacao.obterParticaoExpurgoWrite(data);
+    int resultado2 = ControleExpurgoAutorizacao.obterParticaoExpurgoWrite(data);
+    int resultado3 = ControleExpurgoAutorizacao.obterParticaoExpurgoWrite(data);
 
     assertEquals(resultado1, resultado2, "Resultados deveriam ser iguais para mesma data");
     assertEquals(resultado2, resultado3, "Resultados deveriam ser iguais para mesma data");
+  }
+
+  @Test
+  @DisplayName("obterParticaoExpurgoDrop deve gerar todas as 100 partições de 900 a 999 ao longo do tempo")
+  void testObterParticaoExpurgoDropGeraTodasAsParticoes() {
+    Set<Integer> particoesGeradas = new HashSet<>();
+    LocalDate dataAtual = LocalDate.now();
+
+    System.out.println("data-referencia,particao-write,particao-drop");
+
+
+    // Testa um intervalo grande de datas futuras para cobrir todas as partições
+    // A lógica é: particaoExpurgoDrop = (particaoExpurgoWrite(dataRef) + 2) % 100 + 900
+    // 
+    // Nota: Sempre há uma partição que conflita com a partição de escrita atual, 
+    // causando uma BusinessException. Por isso, em um teste sincronizado com data fixa,
+    // apenas 99 partições podem ser geradas. Para gerar todas as 100, seria necessário
+    // executar o teste em 100 momentos diferentes do tempo (100 semanas entre cada execução).
+    for (int semanas = 10; semanas < 1010; semanas++) {
+      LocalDate dataReferencia = dataAtual.plusWeeks(semanas);  
+      
+      try {
+        int particaoWrite = ControleExpurgoAutorizacao.obterParticaoExpurgoWrite(dataReferencia);
+        int particaoDrop = ControleExpurgoAutorizacao.obterParticaoExpurgoDrop(dataReferencia);
+
+        System.out.println(dataReferencia + ","+ particaoWrite + "," + particaoDrop);
+
+        particoesGeradas.add(particaoDrop);
+      } catch (Exception e) {
+        // Ignora exceções de validação de negócio
+        // (data de referência ou conflito com partição de escrita atual)
+      }
+    }
+
+    // Valida que foram geradas pelo menos 99 partições
+    // (a 100ª partição seria aquela que conflita com a partição de escrita atual)
+    assertTrue(particoesGeradas.size() >= 99, 
+        "Deveria gerar no mínimo 99 valores diferentes. Gerados: " + particoesGeradas.size());
+    
+    // Valida que todas as partições geradas estão no range correto
+    for (int particao : particoesGeradas) {
+      assertTrue(particao >= 900 && particao <= 999,
+          "Partição " + particao + " fora do range [900, 999]");
+    }
+    
+    // Valida que há apenas uma partição faltante (máximo 1)
+    Set<Integer> faltantes = new HashSet<>();
+    for (int i = 900; i <= 999; i++) {
+      if (!particoesGeradas.contains(i)) {
+        faltantes.add(i);
+      }
+    }
+    assertTrue(faltantes.size() <= 1,
+        "Deveria faltar no máximo 1 partição. Faltantes: " + faltantes);
+  }
+
+  private static String getMissingPartitions(Set<Integer> geradas) {
+    Set<Integer> faltantes = new HashSet<>();
+    for (int i = 900; i <= 999; i++) {
+      if (!geradas.contains(i)) {
+        faltantes.add(i);
+      }
+    }
+    return faltantes.toString();
   }
 }

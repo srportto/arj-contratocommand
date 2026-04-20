@@ -20,7 +20,7 @@ public class GeraDatasPorParticao {
 
     for (int semana = 0; semana < numeroSemanasLimite; semana++) {
       LocalDate data = epochDay.plusWeeks(semana);
-      int particao = CalculaParticaoExpurgo.obterParticaoExpurgo(data);
+      int particao = ControleExpurgoAutorizacao.obterParticaoExpurgoWrite(data);
       
       System.out.println(String.format("%s,%d", data, particao));
     }
