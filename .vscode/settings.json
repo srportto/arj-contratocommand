@@ -1,14 +1,14 @@
 {
   "workbench.colorCustomizations": {
-    "activityBar.activeBackground": "#4c6b68",
-    "activityBar.background": "#4c6b68",
+    "activityBar.activeBackground": "#515f7b",
+    "activityBar.background": "#515f7b",
     "activityBar.foreground": "#e7e7e7",
     "activityBar.inactiveForeground": "#e7e7e799",
-    "activityBarBadge.background": "#ac8fb0",
+    "activityBarBadge.background": "#b38c99",
     "activityBarBadge.foreground": "#15202b",
-    "sash.hoverBorder": "#4c6b68"
+    "sash.hoverBorder": "#515f7b"
   },
-  "peacock.color": "#374d4b",
+  "peacock.color": "#3d475c",
   "maven.view": "hierarchical",
   "java.compile.nullAnalysis.mode": "automatic",
   "java.debug.settings.onBuildFailureProceed": true,

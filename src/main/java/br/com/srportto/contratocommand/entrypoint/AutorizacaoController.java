@@ -2,6 +2,8 @@ package br.com.srportto.contratocommand.entrypoint;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,8 +14,8 @@ import java.net.URI;
 import java.util.List;
 
 import br.com.srportto.contratocommand.application.pixauto.PixAutoAutorizacaoService;
-import br.com.srportto.contratocommand.domain.entities.Autorizacao;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.AutorizacaoCompletaResponseDto;
+import br.com.srportto.contratocommand.entrypoint.contratosrest.CancelarAutorizacaoRequest;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.CriarAutorizacaoRequest;
 import jakarta.validation.Valid;
 
@@ -44,16 +46,22 @@ public class AutorizacaoController {
 
   @PostMapping
   public ResponseEntity<AutorizacaoCompletaResponseDto> insert(@RequestBody @Valid CriarAutorizacaoRequest requestRecord) {
-    Autorizacao autorizada = service.criar(requestRecord);
+    AutorizacaoCompletaResponseDto autorizadaResponse = service.criar(requestRecord);
 
     URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
             .path("/{id}")
-            .buildAndExpand(autorizada.getIdAutorizacao())
+            .buildAndExpand(autorizadaResponse.getIdAutorizacao())
             .toUri();
 
-    return ResponseEntity.created(uri).body(AutorizacaoCompletaResponseDto.from(autorizada));
+    return ResponseEntity.created(uri).body(autorizadaResponse);
   }
 
 
+  @PatchMapping("/{idAutorizacao}/cancelar")
+  public ResponseEntity<AutorizacaoCompletaResponseDto> cancelar(@PathVariable String idAutorizacao, @RequestBody @Valid CancelarAutorizacaoRequest requestRecord) {
+    AutorizacaoCompletaResponseDto autorizacaoCanceladaResponse = service.cancelar(idAutorizacao, requestRecord);
+
+    return ResponseEntity.ok(autorizacaoCanceladaResponse);
+  }
 
 }

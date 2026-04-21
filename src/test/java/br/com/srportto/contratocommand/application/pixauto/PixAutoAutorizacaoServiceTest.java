@@ -22,6 +22,7 @@ import java.util.UUID;
 
 import br.com.srportto.contratocommand.domain.entities.Autorizacao;
 import br.com.srportto.contratocommand.domain.entities.IdAutorizacao;
+import br.com.srportto.contratocommand.entrypoint.contratosrest.AutorizacaoCompletaResponseDto;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.CriarAutorizacaoRequest;
 import br.com.srportto.contratocommand.shared.exceptions.BusinessException;
 
@@ -66,7 +67,7 @@ class PixAutoAutorizacaoServiceTest {
         when(repository.save(dominio)).thenReturn(dominio);
 
         // Act
-        Autorizacao resultado = service.criar(request);
+        AutorizacaoCompletaResponseDto resultado = service.criar(request);
 
         // Assert
         assertNotNull(resultado);

@@ -13,10 +13,10 @@ public record CriarAutorizacaoRequest(
 
     LocalDate dataFimVigencia,
 
-    @NotNull(message = "O campo 'status' é obrigatório.") 
+    @NotNull(message = "O campo 'valor' é obrigatório.") 
     BigDecimal valor,
 
-    @NotNull(message = "O campo 'idAutorizacaoEmpresa' é obrigatório.") 
+    @NotNull(message = "O campo 'idAutorizacaoEmpresa' é obrigatório.")
     String idAutorizacaoEmpresa,
 
     BigDecimal valorLimite,
@@ -33,7 +33,8 @@ public record CriarAutorizacaoRequest(
     @NotNull(message = "O campo 'indicadorUsoLimiteConta' é obrigatório.") 
     Integer indicadorUsoLimiteConta,
 
-    @NotNull String codigoCanalContratacao,
+    @NotNull(message = "o campo 'codigoCanalContratacao' é obrigatorio.")
+    String codigoCanalContratacao,
 
     String descricao,
 
