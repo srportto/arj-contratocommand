@@ -1,0 +1,28 @@
+RANGE com campo dataFinalizacao
+
+	Nao viavel, por questao de regra de negocios
+
+	Problema:
+		1 - Autorizacoes sem data de fim , elas representarão a maioria dos casos da aplicacao o que criaria uma hot partition
+		2 - Sem previsibilidade para saber os periodos que o cliente escolherá para a data de finalizacao, quando informada
+		
+
+HASH a partir do campo idPessoaPagadora
+	nao viavel , complexidade tecnica e risco operacional 
+
+	Problemas
+	1 - Problema o campo usado para fazer o hash precisrá estar na PK, que se for por exemplo o idPessoa pagadora fará a PK ter 2 UUID, PK muito grande pro BD indexar 
+	2 - Como fica o criteiro de expurgo, dado que todas as particoes terao dados uteis ou quentes 
+
+
+LIST com campo novo de particao na PK
+	Viavel 
+		desde que use crei uma coluna/campo especifico de particonamento e o adicione a PK
+		use a estrategia de Ring Buffer
+		
+	Riscos
+		1 - Aplicao com a gestao das particoes 
+		2 - Aplicao com estrategia de escrita em particoes quentes (dentro do range 0 a 888) e particoes mortas (900 a 999)
+		3 - Tuplas mortas e a necessidade de tunning na realização de vacuum nas particoes quentes 
+		
+	

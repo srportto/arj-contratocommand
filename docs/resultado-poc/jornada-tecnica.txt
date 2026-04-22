@@ -1,0 +1,26 @@
+A jornada técnica percorrida nos últimos dias concentrou-se na evolução de um sistema crítico de agendamento de pagamentos para o **Pix Automático**. O desafio central foi transformar um modelo de dados relacional (PostgreSQL) que sofria com gargalos de crescimento em uma arquitetura de alta performance capaz de lidar com milhões de registros sem degradação no I/O.
+
+Aqui estão os pontos fundamentais da estratégia consolidada:
+
+### 1. Resumo da Evolução Técnica (17/04 - Presente)
+As discussões evoluíram da identificação de problemas de "hotspot" (concentração de dados) para uma solução de engenharia de dados sofisticada:
+
+* **Identificação do Gargalo:** O particionamento original por `RANGE` de data era ineficiente porque muitos contratos não tinham data de fim definida (usando o valor fictício `9999-12-31`), o que sobrecarregava uma única partição.
+* **Distribuição de Carga:** Adotamos a estratégia de distribuir os dados ativos em **889 partições (0 a 888)**. Para garantir a uniformidade, utilizamos um algoritmo de **Hash sobre o UUID** da autorização, garantindo que o hardware seja utilizado de forma equilibrada.
+* **Gestão de Ciclo de Vida:** A transição do dado "quente" (ativo) para o "frio" (finalizado) foi resolvida através do conceito de **Ring Buffer**, movendo a lógica de expurgo do banco para a aplicação.
+
+### 2. A Estratégia de Particionamento e o Ring Buffer
+A adoção do **Ring Buffer** (ou Buffer Circular) nas partições **900 a 999** foi a peça-chave para viabilizar o expurgo eficiente.
+
+**Por que adotar o Ring Buffer?**
+* **Expurgo a Custo Zero:** Em vez de executar comandos `DELETE` massivos (que geram locks, fragmentação e sobrecarga de vácuo), o expurgo é feito via `DROP TABLE`. Ao derrubar uma partição inteira (ex: a gaveta 905), o espaço em disco é liberado instantaneamente.
+* **Row Movement Automático:** Ao utilizar o particionamento por `LIST`, quando a aplicação atualiza o status de um contrato e altera seu `bucket_id` para um valor no range de expurgo, o PostgreSQL move fisicamente o registro de uma partição ativa para uma de descarte de forma atômica.
+* **Previsibilidade Temporal:** O algoritmo implementado em Java utiliza o módulo de semanas totais desde o Epoch. Isso cria uma janela de retenção de quase 2 anos (100 semanas) antes que o sistema precise reutilizar a primeira partição de expurgo, garantindo segurança operacional.
+
+---
+
+Para visualizar como essa mecânica funciona na prática — desde a chegada do agendamento até o momento do descarte — utilize o simulador abaixo para testar o comportamento do algoritmo e o movimento dos dados entre as partições.
+
+```json?chameleon
+{"component":"LlmGeneratedComponent","props":{"height":"700px","prompt":"Objetivo: Simular a estratégia de particionamento e Ring Buffer para autorizações de pagamento.\n\nData State:\n- rangeAtivo: 0 a 888\n- rangeExpurgo: 900 a 999\n- uuidExemplo: '123e4567-e89b-12d3-a456-426614174000'\n\nEstratégia:\n1. O usuário insere um UUID.\n2. O simulador calcula o bucket ativo (UUID % 889).\n3. O usuário pode 'Finalizar Contrato'.\n4. O simulador calcula o bucket de expurgo baseado na data atual (semanas desde 1970 % 100 + 900).\n5. Visualizar o movimento do dado da zona 'Ativa' para a zona 'Ring Buffer'.\n\nInterface:\n- Campo de entrada para UUID (com botão de gerar aleatório).\n- Botão 'Inserir no Banco'.\n- Lista de registros inseridos com status 'Ativo'.\n- Botão 'Finalizar' ao lado de cada registro.\n- Visualização de duas áreas: 'Partições Ativas (0-888)' e 'Ring Buffer de Expurgo (900-999)'.\n\nComportamento:\n- Ao inserir, mostrar o cálculo do Hash -> Inteiro -> Módulo 889.\n- Ao finalizar, mostrar o cálculo da Semana Atual -> Módulo 100 -> +900.\n- Usar animações suaves para o movimento entre as áreas. Não usar cores específicas, apenas destacar os estados.","id":"im_2317a572fb042096"}}
+```
