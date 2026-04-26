@@ -18,10 +18,10 @@ import lombok.Setter;
 @Embeddable
 public class IdAutorizacao {
 
-  @JoinColumn(name = "id_autorizacao", nullable = false)
-  private UUID idAutorizacao;
+    @JoinColumn(name = "id_autorizacao", nullable = false)
+    private UUID idAutorizacao;
 
-  @JoinColumn(name = "id_particao_conta", nullable = false)
-  private Integer idParticaoConta;
+    @JoinColumn(name = "id_particao_conta", nullable = false)
+    private Integer idParticaoConta;
 
 }

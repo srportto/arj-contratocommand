@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BodyOcorrenciasErrosValidations {
 
-  private String fieldName;
-  private String message;
+    private String fieldName;
+    private String message;
 }

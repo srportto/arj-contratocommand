@@ -15,16 +15,16 @@ import lombok.NoArgsConstructor;
 @Embeddable
 public class Cancelamento {
 
-  @JoinColumn(name = "codigo_canal_cancelamento", nullable = true)
-  private String codigoCanalCancelamento;
+    @JoinColumn(name = "codigo_canal_cancelamento", nullable = true)
+    private String codigoCanalCancelamento;
 
-  @JoinColumn(name = "id_pessoa_cancelamento", nullable = true, unique = false)
-  private UUID idPessoaCancelamento;
+    @JoinColumn(name = "id_pessoa_cancelamento", nullable = true, unique = false)
+    private UUID idPessoaCancelamento;
 
-  @JoinColumn(name = "data_hora_cancelamento", nullable = true)
-  private LocalDateTime dataHoraCancelamento;
+    @JoinColumn(name = "data_hora_cancelamento", nullable = true)
+    private LocalDateTime dataHoraCancelamento;
 
-  @JoinColumn(name = "motivo_cancelamento", nullable = true)
-  private String motivoCancelamento;
+    @JoinColumn(name = "motivo_cancelamento", nullable = true)
+    private String motivoCancelamento;
 
 }

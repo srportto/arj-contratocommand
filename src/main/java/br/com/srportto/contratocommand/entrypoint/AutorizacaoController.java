@@ -23,45 +23,46 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/autorizacao")
 public class AutorizacaoController {
 
-  private final PixAutoAutorizacaoService service;
+    private final PixAutoAutorizacaoService service;
 
-  public AutorizacaoController(PixAutoAutorizacaoService service) {
-    this.service = service;
-  }
+    public AutorizacaoController(PixAutoAutorizacaoService service) {
+        this.service = service;
+    }
 
-  @GetMapping("/olaMundo")
-  String getOlaMundo() {
-    return "Olá, mundo!";
-  }
+    @GetMapping("/olaMundo")
+    String getOlaMundo() {
+        return "Olá, mundo!";
+    }
 
-  @GetMapping("/ativas")
-  public ResponseEntity<List<AutorizacaoCompletaResponseDto>> listarAtivas() {
-    List<AutorizacaoCompletaResponseDto> autorizacoes = service.listarAtivas()
-        .stream()
-        .map(AutorizacaoCompletaResponseDto::from)
-        .toList();
+    @GetMapping("/ativas")
+    public ResponseEntity<List<AutorizacaoCompletaResponseDto>> listarAtivas() {
+        List<AutorizacaoCompletaResponseDto> autorizacoes = service.listarAtivas()
+                .stream()
+                .map(AutorizacaoCompletaResponseDto::from)
+                .toList();
 
-    return ResponseEntity.ok(autorizacoes);
-  }
+        return ResponseEntity.ok(autorizacoes);
+    }
 
-  @PostMapping
-  public ResponseEntity<AutorizacaoCompletaResponseDto> insert(@RequestBody @Valid CriarAutorizacaoRequest requestRecord) {
-    AutorizacaoCompletaResponseDto autorizadaResponse = service.criar(requestRecord);
+    @PostMapping
+    public ResponseEntity<AutorizacaoCompletaResponseDto> insert(
+            @RequestBody @Valid CriarAutorizacaoRequest requestRecord) {
+        AutorizacaoCompletaResponseDto autorizadaResponse = service.criar(requestRecord);
 
-    URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
-            .path("/{id}")
-            .buildAndExpand(autorizadaResponse.getIdAutorizacao())
-            .toUri();
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(autorizadaResponse.getIdAutorizacao())
+                .toUri();
 
-    return ResponseEntity.created(uri).body(autorizadaResponse);
-  }
+        return ResponseEntity.created(uri).body(autorizadaResponse);
+    }
 
+    @PatchMapping("/{idAutorizacao}/cancelar")
+    public ResponseEntity<AutorizacaoCompletaResponseDto> cancelar(@PathVariable String idAutorizacao,
+            @RequestBody @Valid CancelarAutorizacaoRequest requestRecord) {
+        AutorizacaoCompletaResponseDto autorizacaoCanceladaResponse = service.cancelar(idAutorizacao, requestRecord);
 
-  @PatchMapping("/{idAutorizacao}/cancelar")
-  public ResponseEntity<AutorizacaoCompletaResponseDto> cancelar(@PathVariable String idAutorizacao, @RequestBody @Valid CancelarAutorizacaoRequest requestRecord) {
-    AutorizacaoCompletaResponseDto autorizacaoCanceladaResponse = service.cancelar(idAutorizacao, requestRecord);
-
-    return ResponseEntity.ok(autorizacaoCanceladaResponse);
-  }
+        return ResponseEntity.ok(autorizacaoCanceladaResponse);
+    }
 
 }

@@ -16,24 +16,24 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class LayoutErrosApiResponse {
 
-  private Instant timestamp;
-  private String error;
-  private String message;
-  private String path;
+    private Instant timestamp;
+    private String error;
+    private String message;
+    private String path;
 
-  public void setTimestamp(Instant timestamp) {
-    this.timestamp = timestamp;
-  }
+    public void setTimestamp(Instant timestamp) {
+        this.timestamp = timestamp;
+    }
 
-  public void setError(String error) {
-    this.error = error;
-  }
+    public void setError(String error) {
+        this.error = error;
+    }
 
-  public void setMessage(String message) {
-    this.message = message;
-  }
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
-  public void setPath(String path) {
-    this.path = path;
-  }
+    public void setPath(String path) {
+        this.path = path;
+    }
 }

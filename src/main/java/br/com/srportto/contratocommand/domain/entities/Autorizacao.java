@@ -28,75 +28,72 @@ import lombok.Setter;
 @Table(name = "autorizacoes") // tabela que guarda as roles/perfis de usuarios conhecidos da aplicacao
 public class Autorizacao {
 
-  @EmbeddedId
-  private IdAutorizacao idAutorizacao;
- 
-  @Column(name = "data_fim_vigencia", nullable = false)
-  private LocalDate dataFimVigencia;
+    @EmbeddedId
+    private IdAutorizacao idAutorizacao;
 
-  @Column(name = "status", nullable = false)
-  private Integer status;
+    @Column(name = "data_fim_vigencia", nullable = false)
+    private LocalDate dataFimVigencia;
 
-  @Column(name = "motivo_status", nullable = false)
-  private String motivoStatus;
+    @Column(name = "status", nullable = false)
+    private Integer status;
 
-  @Column(name = "data_inicio_vigencia", nullable = false)
-  private LocalDate dataInicioVigencia;
+    @Column(name = "motivo_status", nullable = false)
+    private String motivoStatus;
 
-  @Column(name = "data_hora_inclusao", nullable = false)
-  private LocalDateTime dataHoraInclusao;
+    @Column(name = "data_inicio_vigencia", nullable = false)
+    private LocalDate dataInicioVigencia;
 
-  @Column(name = "data_hora_ultima_atlz", nullable = false)
-  private LocalDateTime dataHoraUltimaAtualizacao;
+    @Column(name = "data_hora_inclusao", nullable = false)
+    private LocalDateTime dataHoraInclusao;
 
-  @Column(name = "valor", nullable = false, precision = 17, scale = 2)
-  private BigDecimal valorAutorizacao;
+    @Column(name = "data_hora_ultima_atlz", nullable = false)
+    private LocalDateTime dataHoraUltimaAtualizacao;
 
-  @Column(name = "id_autorizacao_empresa", nullable = false, unique = false)
-  private String idAutorizacaoEmpresa;
+    @Column(name = "valor", nullable = false, precision = 17, scale = 2)
+    private BigDecimal valorAutorizacao;
 
-  @Column(name = "valor_limite", nullable = false, precision = 17, scale = 2)
-  private BigDecimal valorLimite;
+    @Column(name = "id_autorizacao_empresa", nullable = false, unique = false)
+    private String idAutorizacaoEmpresa;
 
-  @Column(name = "frequencia", nullable = false)
-  private short frequenciaPagamento; // 1 - mensal, 2 - bimestral, 3 - trimestral, 4 - semestral, 5 - anual
+    @Column(name = "valor_limite", nullable = false, precision = 17, scale = 2)
+    private BigDecimal valorLimite;
 
-  @Column(name = "quantidade_dividas_ciclo", nullable = false)
-  private short quantidadeDividasCiclo;
+    @Column(name = "frequencia", nullable = false)
+    private short frequenciaPagamento; // 1 - mensal, 2 - bimestral, 3 - trimestral, 4 - semestral, 5 - anual
 
-  @Column(name = "indicador_uso_limite_conta", nullable = false)
-  private short indicadorUsoLimiteConta; // 0 - nao utiliza limite de conta, 1 - utiliza limite de conta
+    @Column(name = "quantidade_dividas_ciclo", nullable = false)
+    private short quantidadeDividasCiclo;
 
-  @Column(name = "indicador_tipo_mensageria ", nullable = false)
-  private short indicadorTipoMensageria; // 0 - nao utiliza mensageria, 1 - utiliza mensageria SPI , 2 ...
+    @Column(name = "indicador_uso_limite_conta", nullable = false)
+    private short indicadorUsoLimiteConta; // 0 - nao utiliza limite de conta, 1 - utiliza limite de conta
 
-  @Column(name = "codigo_canal_contratacao", nullable = false)
-  private String codigoCanalContratacao; // C1 - canal presencial, C2 - canal digital, C3 - canal central de atendimento
+    @Column(name = "indicador_tipo_mensageria ", nullable = false)
+    private short indicadorTipoMensageria; // 0 - nao utiliza mensageria, 1 - utiliza mensageria SPI , 2 ...
 
-  @Column(name = "descricao", nullable = true)
-  private String descricao;
+    @Column(name = "codigo_canal_contratacao", nullable = false)
+    private String codigoCanalContratacao; // C1 - canal presencial, C2 - canal digital, C3 - canal central de
+                                           // atendimento
 
-  @Column(name = "id_unico_conta_contratante", nullable = false, unique = false, length = 36)
-  private UUID idUnicoContaContratante;
+    @Column(name = "descricao", nullable = true)
+    private String descricao;
 
-  @Column(name = "id_pessoa_pagadora", nullable = false, unique = false, length = 36)
-  private UUID idPessoaPagadora;
+    @Column(name = "id_unico_conta_contratante", nullable = false, unique = false, length = 36)
+    private UUID idUnicoContaContratante;
 
-  @Column(name = "id_pessoa_devedora", nullable = false, unique = false, length = 36)
-  private UUID idPessoaDevedora;
+    @Column(name = "id_pessoa_pagadora", nullable = false, unique = false, length = 36)
+    private UUID idPessoaPagadora;
 
-  @Column(name = "id_pessoa_recebedora", nullable = false, unique = false, length = 36)
-  private UUID idPessoaRecebedora;
+    @Column(name = "id_pessoa_devedora", nullable = false, unique = false, length = 36)
+    private UUID idPessoaDevedora;
 
-  @Embedded
-  private Cancelamento cancelamento;
+    @Column(name = "id_pessoa_recebedora", nullable = false, unique = false, length = 36)
+    private UUID idPessoaRecebedora;
 
-  @Column(name = "metadados", nullable = false, unique = false, columnDefinition = "jsonb")
-  @JdbcTypeCode(SqlTypes.JSON)
-  private String metadados;
+    @Embedded
+    private Cancelamento cancelamento;
 
+    @Column(name = "metadados", nullable = false, unique = false, columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    private String metadados;
 
-
-  
 }
-

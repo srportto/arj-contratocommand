@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import br.com.srportto.contratocommand.application.contratacao.ContratacaoValidator;
 import br.com.srportto.contratocommand.domain.entities.Autorizacao;
 import br.com.srportto.contratocommand.domain.entities.Cancelamento;
 import br.com.srportto.contratocommand.domain.utilities.ControleExpurgoAutorizacao;
@@ -19,8 +20,10 @@ import br.com.srportto.contratocommand.entrypoint.contratosrest.AutorizacaoCompl
 import br.com.srportto.contratocommand.entrypoint.contratosrest.CancelarAutorizacaoRequest;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.CriarAutorizacaoRequest;
 import br.com.srportto.contratocommand.shared.exceptions.BusinessException;
+import lombok.AllArgsConstructor;
 
 @Service
+@AllArgsConstructor
 public class PixAutoAutorizacaoService {
 
   private static final Integer STATUS_ATIVA = 1;
@@ -29,18 +32,15 @@ public class PixAutoAutorizacaoService {
 
   private final PixAutoAutorizacaoRepository repository;
   private final PixAutoAutorizacaoMapper mapper;
-
-  public PixAutoAutorizacaoService(PixAutoAutorizacaoRepository repository, PixAutoAutorizacaoMapper mapper) {
-    this.repository = repository;
-    this.mapper = mapper;
-  }
+  private final ContratacaoValidator contratacaoValidator;
 
   public AutorizacaoCompletaResponseDto criar(CriarAutorizacaoRequest request) {
     log.info("Iniciando criação de autorização para empresa: {}", request.idAutorizacaoEmpresa());
 
     // Validar regras de negócio
     var dataFimVigenciaTratada = trataDataFimVigencia(request.dataFimVigencia(), request.codigoCanalContratacao());
-    validarDataFimVigencia(dataFimVigenciaTratada);
+
+    // validarDataFimVigencia(dataFimVigenciaTratada);
 
     CriarAutorizacaoRequest requestComDataFimTratada = new CriarAutorizacaoRequest(
         dataFimVigenciaTratada,
@@ -60,16 +60,20 @@ public class PixAutoAutorizacaoService {
 
     validarValorLimite(request.valor(), request.valorLimite());
 
+    // todo: evoluir para um validator generico, com injeção de regras específicas
+    // por tipo de contratação
+    contratacaoValidator.validar(requestComDataFimTratada);
+
     // Converter DTO para Entity
     Autorizacao autorizacaoMontada = mapper.toDomain(requestComDataFimTratada);
 
     return salvarCriacaoAutorizacao(autorizacaoMontada);
-    
+
   }
-  
+
   @Transactional
   private AutorizacaoCompletaResponseDto salvarCriacaoAutorizacao(Autorizacao autorizacao) {
-  
+
     // Persistir no banco de dados
     Autorizacao autorizadaPersistida = persistirAutorizacao(autorizacao);
 
@@ -83,16 +87,6 @@ public class PixAutoAutorizacaoService {
     return repository.findByStatus(STATUS_ATIVA);
   }
 
-  private void validarDataFimVigencia(LocalDate dataFimVigencia) {
-
-    LocalDate hoje = LocalDate.now();
-    if (dataFimVigencia.isBefore(hoje)) {
-      log.warn("Tentativa de criação com data de fim de vigência no passado: {}", dataFimVigencia);
-      throw new BusinessException(
-          "A data de fim de vigência não pode ser no passado. Data informada: " + dataFimVigencia);
-    }
-  }
-
   private void validarValorLimite(java.math.BigDecimal valor, java.math.BigDecimal valorLimite) {
     if (valorLimite != null && valorLimite.compareTo(valor) < 0) {
       log.warn("Tentativa de criação com valorLimite inválido. Limite: {}, Valor: {}", valorLimite, valor);
@@ -101,6 +95,7 @@ public class PixAutoAutorizacaoService {
     }
   }
 
+  // mock para simular regra de negócio de validação da data de fim de vigência
   private LocalDate trataDataFimVigencia(LocalDate dataFimVigencia, String codigoCanalContratacao) {
     // Se dataFimVigencia foi informada, usar esse valor
     if (dataFimVigencia != null) {
@@ -113,11 +108,10 @@ public class PixAutoAutorizacaoService {
       case "C2" -> LocalDate.of(9999, 4, 1); // abril
       case "C3" -> LocalDate.of(9999, 7, 1); // julho
       case "C4" -> LocalDate.of(9999, 10, 1); // outubro
-      case "C9" -> LocalDate.of(9999, 12, 31); // dezembro
+      case "C9" -> LocalDate.of(1990, 12, 31); // dezembro
       default -> LocalDate.of(9999, 1, 1); // Padrão: C1
     };
   }
-
 
   private Autorizacao persistirAutorizacao(Autorizacao autorizacaoMontada) {
 
@@ -128,7 +122,6 @@ public class PixAutoAutorizacaoService {
 
     return autorizadaPersistida;
   }
-
 
   @Transactional(readOnly = true)
   private Autorizacao obterAutorizacaoPorIdEParticao(String idAutorizacao, int idParticaoAutorizacao) {
@@ -153,7 +146,7 @@ public class PixAutoAutorizacaoService {
     var autorizacao = obterAutorizacaoPorIdEParticao(idAutorizacao, idParticaoAutorizacao);
 
     autorizacao.setStatus(3); // cancelada
-    var dadosCancelamento =  new Cancelamento();
+    var dadosCancelamento = new Cancelamento();
 
     var dataHoraCancelamento = LocalDateTime.now();
     dadosCancelamento.setDataHoraCancelamento(dataHoraCancelamento);
@@ -161,7 +154,7 @@ public class PixAutoAutorizacaoService {
     dadosCancelamento.setIdPessoaCancelamento(request.idPessoaCancelamento());
 
     autorizacao.setDataHoraUltimaAtualizacao(dataHoraCancelamento);
-    
+
     if (request.motivoCancelamento() != null) {
       dadosCancelamento.setMotivoCancelamento(request.motivoCancelamento());
     }
@@ -179,7 +172,6 @@ public class PixAutoAutorizacaoService {
     return AutorizacaoCompletaResponseDto.from(autorizacaoCanceladaEmNovaParticao);
   }
 
-  
   @Transactional
   private Autorizacao transferirParaNovaParticao(Autorizacao autorizacao, Integer novaParticao) {
     UUID idAutorizacaoUuid = autorizacao.getIdAutorizacao().getIdAutorizacao();
@@ -190,7 +182,7 @@ public class PixAutoAutorizacaoService {
       return persistirAutorizacao(autorizacao);
     }
 
-    log.info("Transferindo autorização {} da partição {} para partição {}", 
+    log.info("Transferindo autorização {} da partição {} para partição {}",
         idAutorizacaoUuid, particaoAntiga, novaParticao);
 
     // Delete do banco com a chave antiga

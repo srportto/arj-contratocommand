@@ -10,9 +10,9 @@ import lombok.Setter;
 @Setter
 public class LayoutErrosApiValidationsResponse extends LayoutErrosApiResponse {
 
-  private List<BodyOcorrenciasErrosValidations> occurrences = new ArrayList<>();
+    private List<BodyOcorrenciasErrosValidations> occurrences = new ArrayList<>();
 
-  public void addOccurrences(String fieldName, String message) {
-    occurrences.add(new BodyOcorrenciasErrosValidations(fieldName, message));
-  }
+    public void addOccurrences(String fieldName, String message) {
+        occurrences.add(new BodyOcorrenciasErrosValidations(fieldName, message));
+    }
 }

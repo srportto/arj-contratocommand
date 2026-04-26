@@ -1,13 +1,13 @@
 spring:
-  application:
-    name: contratocommand
-  datasource:
-    url: jdbc:postgresql://localhost:5432/${DB_NAME}
-    username: ${DB_USER_NAME}
-    password: ${DB_PASSWORD}
-  jpa:
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+    application:
+        name: contratocommand
+    datasource:
+        url: jdbc:postgresql://localhost:5432/${DB_NAME}
+        username: ${DB_USER_NAME}
+        password: ${DB_PASSWORD}
+    jpa:
+        hibernate:
+            ddl-auto: update
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.PostgreSQLDialect
