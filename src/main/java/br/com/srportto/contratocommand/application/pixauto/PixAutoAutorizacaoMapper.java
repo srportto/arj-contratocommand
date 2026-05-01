@@ -22,6 +22,7 @@ public interface PixAutoAutorizacaoMapper {
     @Mapping(source = "frequencia", target = "frequenciaPagamento")
     @Mapping(source = "quantidadeDividasCiclo", target = "quantidadeDividasCiclo")
     @Mapping(source = "indicadorUsoLimiteConta", target = "indicadorUsoLimiteConta")
+    @Mapping(source = "tipoProduto", target = "tipoProduto")
     @Mapping(target = "idAutorizacao", ignore = true)
     @Mapping(target = "status", ignore = true) // Será definido no @AfterMapping
     @Mapping(target = "motivoStatus", ignore = true) // Será definido no @AfterMapping

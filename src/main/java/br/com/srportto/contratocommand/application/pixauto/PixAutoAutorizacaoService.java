@@ -11,9 +11,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import br.com.srportto.contratocommand.application.ContratacaoService;
 import br.com.srportto.contratocommand.application.contratacao.ContratacaoValidator;
 import br.com.srportto.contratocommand.domain.entities.Autorizacao;
 import br.com.srportto.contratocommand.domain.entities.Cancelamento;
+import br.com.srportto.contratocommand.domain.enums.TipoProduto;
 import br.com.srportto.contratocommand.domain.utilities.ControleExpurgoAutorizacao;
 import br.com.srportto.contratocommand.domain.utilities.ReversibleUUIDv7;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.AutorizacaoCompletaResponseDto;
@@ -24,7 +26,7 @@ import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
-public class PixAutoAutorizacaoService {
+public class PixAutoAutorizacaoService implements ContratacaoService {
 
   private static final Integer STATUS_ATIVA = 1;
 
@@ -34,8 +36,25 @@ public class PixAutoAutorizacaoService {
   private final PixAutoAutorizacaoMapper mapper;
   private final ContratacaoValidator contratacaoValidator;
 
+  @Override
+  public boolean supports(CriarAutorizacaoRequest request) {
+    // Retorna true se for um tipo de produto que o PIX Automático suporta
+    return request.tipoProduto() != null && request.tipoProduto() == TipoProduto.PIX_AUTO;
+  }
+
+  @Override
+  public AutorizacaoCompletaResponseDto criarAutorizacao(CriarAutorizacaoRequest request) {
+    return criar(request);
+  }
+
+  @Override
+  public AutorizacaoCompletaResponseDto cancelarAutorizacao(String idAutorizacao, CancelarAutorizacaoRequest request) {
+    return cancelar(idAutorizacao, request);
+  }
+
   public AutorizacaoCompletaResponseDto criar(CriarAutorizacaoRequest request) {
-    log.info("Iniciando criação de autorização para empresa: {}", request.idAutorizacaoEmpresa());
+    log.info("Iniciando criação de autorização para empresa: {}, Tipo de Produto: {}", 
+        request.idAutorizacaoEmpresa(), request.tipoProduto());
 
     // Validar regras de negócio
     var dataFimVigenciaTratada = trataDataFimVigencia(request.dataFimVigencia(), request.codigoCanalContratacao());
@@ -44,6 +63,7 @@ public class PixAutoAutorizacaoService {
 
     CriarAutorizacaoRequest requestComDataFimTratada = new CriarAutorizacaoRequest(
         dataFimVigenciaTratada,
+        request.tipoProduto(),
         request.valor(),
         request.idAutorizacaoEmpresa(),
         request.valorLimite(),

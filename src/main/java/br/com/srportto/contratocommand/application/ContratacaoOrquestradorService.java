@@ -19,7 +19,7 @@ public class ContratacaoOrquestradorService {
         ContratacaoService servico = servicosProduto.stream()
                 .filter(s -> s.supports(request))
                 .findFirst()
-                .orElseThrow(() -> new BusinessException("Produto não suportado ou inválido (codigoProduto: " + request.codigoProduto() + ")"));
+                .orElseThrow(() -> new BusinessException("Produto não suportado ou inválido (tipoProduto: " + request.tipoProduto() + ")"));
 
         return servico.criarAutorizacao(request);
     }

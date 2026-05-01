@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import br.com.srportto.contratocommand.domain.entities.Autorizacao;
 import br.com.srportto.contratocommand.domain.entities.Cancelamento;
+import br.com.srportto.contratocommand.domain.enums.TipoProduto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,6 +24,7 @@ public class AutorizacaoCompletaResponseDto {
 
     private UUID idAutorizacao;
     private LocalDate dataFimVigencia;
+    private TipoProduto tipoProduto;
     private Integer status;
     private String motivoStatus;
     private LocalDate dataInicioVigencia;
@@ -50,6 +52,7 @@ public class AutorizacaoCompletaResponseDto {
         return AutorizacaoCompletaResponseDto.builder()
                 .idAutorizacao(autorizacao.getIdAutorizacao().getIdAutorizacao())
                 .dataFimVigencia(autorizacao.getDataFimVigencia())
+                .tipoProduto(autorizacao.getTipoProduto())
                 .status(autorizacao.getStatus())
                 .motivoStatus(autorizacao.getMotivoStatus())
                 .dataInicioVigencia(autorizacao.getDataInicioVigencia())

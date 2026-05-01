@@ -2,8 +2,10 @@ package br.com.srportto.contratocommand.application.pixauto;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
@@ -25,6 +27,7 @@ import java.util.UUID;
 import br.com.srportto.contratocommand.application.contratacao.ContratacaoValidator;
 import br.com.srportto.contratocommand.domain.entities.Autorizacao;
 import br.com.srportto.contratocommand.domain.entities.IdAutorizacao;
+import br.com.srportto.contratocommand.domain.enums.TipoProduto;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.AutorizacaoCompletaResponseDto;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.CriarAutorizacaoRequest;
 import br.com.srportto.contratocommand.shared.exceptions.BusinessException;
@@ -45,6 +48,78 @@ class PixAutoAutorizacaoServiceTest {
     private ContratacaoValidator contratacaoValidator;
 
     private static final Integer STATUS_ATIVA = 1;
+    private static final TipoProduto TIPO_PRODUTO_PIX_AUTO = TipoProduto.PIX_AUTO;
+    private static final TipoProduto TIPO_PRODUTO_DDA_AUTO = TipoProduto.DDA_AUTO;
+
+
+    @Test
+    @DisplayName("supports - deve retornar true para TipoProduto.PIX_AUTO")
+    void testSupports_True() {
+        CriarAutorizacaoRequest request = new CriarAutorizacaoRequest(
+                LocalDate.now().plusDays(30),
+                TIPO_PRODUTO_PIX_AUTO,
+                new BigDecimal("1000.00"),
+                "EMP001",
+                new BigDecimal("2000.00"),
+                5,
+                2,
+                0,
+                "C1",
+                "Teste",
+                UUID.fromString("550e8400-e29b-41d4-a716-446655440000"),
+                UUID.fromString("550e8400-e29b-41d4-a716-446655440001"),
+                UUID.fromString("550e8400-e29b-41d4-a716-446655440002"),
+                UUID.fromString("550e8400-e29b-41d4-a716-446655440003"),
+                null
+        );
+        assertTrue(service.supports(request));
+    }
+
+    @Test
+    @DisplayName("supports - deve retornar false para TipoProduto.DDA_AUTO")
+    void testSupports_False() {
+        CriarAutorizacaoRequest request = new CriarAutorizacaoRequest(
+                LocalDate.now().plusDays(30),
+                TIPO_PRODUTO_DDA_AUTO,
+                new BigDecimal("1000.00"),
+                "EMP001",
+                new BigDecimal("2000.00"),
+                5,
+                2,
+                0,
+                "C1",
+                "Teste",
+                UUID.fromString("550e8400-e29b-41d4-a716-446655440000"),
+                UUID.fromString("550e8400-e29b-41d4-a716-446655440001"),
+                UUID.fromString("550e8400-e29b-41d4-a716-446655440002"),
+                UUID.fromString("550e8400-e29b-41d4-a716-446655440003"),
+                null
+        );
+        assertFalse(service.supports(request));
+    }
+
+    @Test
+    @DisplayName("supports - deve retornar false para tipoProduto nulo")
+    void testSupports_NullTipoProduto() {
+        CriarAutorizacaoRequest request = new CriarAutorizacaoRequest(
+                LocalDate.now().plusDays(30),
+                null, // tipoProduto nulo
+                new BigDecimal("1000.00"),
+                "EMP001",
+                new BigDecimal("2000.00"),
+                5,
+                2,
+                0,
+                "C1",
+                "Teste",
+                UUID.fromString("550e8400-e29b-41d4-a716-446655440000"),
+                UUID.fromString("550e8400-e29b-41d4-a716-446655440001"),
+                UUID.fromString("550e8400-e29b-41d4-a716-446655440002"),
+                UUID.fromString("550e8400-e29b-41d4-a716-446655440003"),
+                null
+        );
+        assertFalse(service.supports(request));
+    }
 
     @Test
     @DisplayName("Criar - fluxo feliz")
@@ -53,6 +128,7 @@ class PixAutoAutorizacaoServiceTest {
         LocalDate dataFimFutura = LocalDate.now().plusDays(30);
         CriarAutorizacaoRequest request = new CriarAutorizacaoRequest(
                 dataFimFutura,
+                TIPO_PRODUTO_PIX_AUTO,
                 new BigDecimal("1000.00"),
                 "EMP001",
                 new BigDecimal("2000.00"),
@@ -91,6 +167,7 @@ class PixAutoAutorizacaoServiceTest {
         LocalDate passado = LocalDate.now().minusDays(1);
         CriarAutorizacaoRequest request = new CriarAutorizacaoRequest(
                 passado,
+                TIPO_PRODUTO_PIX_AUTO,
                 new BigDecimal("1000.00"),
                 "EMP001",
                 new BigDecimal("2000.00"),
@@ -129,6 +206,7 @@ class PixAutoAutorizacaoServiceTest {
         LocalDate dataFimFutura = LocalDate.now().plusDays(30);
         CriarAutorizacaoRequest request = new CriarAutorizacaoRequest(
                 dataFimFutura,
+                TIPO_PRODUTO_PIX_AUTO,
                 new BigDecimal("3000.00"),  // valor maior que o limite
                 "EMP001",
                 new BigDecimal("2000.00"),  // limite menor que o valor

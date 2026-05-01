@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -18,6 +19,9 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import br.com.srportto.contratocommand.domain.converters.TipoProdutoConverter;
+import br.com.srportto.contratocommand.domain.enums.TipoProduto;
 
 @Data
 @AllArgsConstructor
@@ -33,6 +37,10 @@ public class Autorizacao {
 
     @Column(name = "data_fim_vigencia", nullable = false)
     private LocalDate dataFimVigencia;
+
+    @Column(name = "tipo_produto", nullable = false)
+    @Convert(converter = TipoProdutoConverter.class)
+    private TipoProduto tipoProduto;
 
     @Column(name = "status", nullable = false)
     private Integer status;
