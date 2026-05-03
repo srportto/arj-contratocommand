@@ -12,5 +12,6 @@
   "maven.view": "hierarchical",
   "java.compile.nullAnalysis.mode": "automatic",
   "java.debug.settings.onBuildFailureProceed": true,
-  "java.dependency.packagePresentation": "flat"
+  "java.dependency.packagePresentation": "flat",
+  "java.configuration.updateBuildConfiguration": "interactive"
 }

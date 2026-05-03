@@ -15,7 +15,7 @@ public record CriarAutorizacaoRequest(
     LocalDate dataFimVigencia,
 
     @NotNull(message = "O campo 'tipoProduto' é obrigatório.")
-    TipoProduto tipoProduto,
+    String tipoProduto,
 
     @NotNull(message = "O campo 'valor' é obrigatório.")
     BigDecimal valor,

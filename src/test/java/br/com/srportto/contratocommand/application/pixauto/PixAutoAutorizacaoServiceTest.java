@@ -48,8 +48,8 @@ class PixAutoAutorizacaoServiceTest {
     private ContratacaoValidator contratacaoValidator;
 
     private static final Integer STATUS_ATIVA = 1;
-    private static final TipoProduto TIPO_PRODUTO_PIX_AUTO = TipoProduto.PIX_AUTO;
-    private static final TipoProduto TIPO_PRODUTO_DDA_AUTO = TipoProduto.DDA_AUTO;
+    private static final String TIPO_PRODUTO_PIX_AUTO = "PIX_AUTO";
+    private static final String TIPO_PRODUTO_DDA_AUTO = "DDA_AUTO";
 
 
     @Test

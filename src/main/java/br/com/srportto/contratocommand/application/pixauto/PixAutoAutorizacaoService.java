@@ -39,7 +39,7 @@ public class PixAutoAutorizacaoService implements ContratacaoService {
   @Override
   public boolean supports(CriarAutorizacaoRequest request) {
     // Retorna true se for um tipo de produto que o PIX Automático suporta
-    return request.tipoProduto() != null && request.tipoProduto() == TipoProduto.PIX_AUTO;
+    return request.tipoProduto() != null && "PIX_AUTO".equals(request.tipoProduto().toUpperCase());
   }
 
   @Override
