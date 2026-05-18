@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import br.com.srportto.contratocommand.application.validationSetUp.Validator;
+import br.com.srportto.contratocommand.shared.validationSetUp.Validator;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.CriarAutorizacaoRequest;
 import lombok.AllArgsConstructor;
 

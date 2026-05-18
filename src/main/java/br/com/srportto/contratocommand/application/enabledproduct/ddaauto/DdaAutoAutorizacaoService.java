@@ -1,10 +1,10 @@
-package br.com.srportto.contratocommand.application.ddaauto;
+package br.com.srportto.contratocommand.application.usecases.ddaauto;
 
 import org.springframework.stereotype.Service;
 
-import br.com.srportto.contratocommand.application.ContratacaoService;
-import br.com.srportto.contratocommand.application.ddaauto.usecases.CancelarDdaAutoUseCase;
-import br.com.srportto.contratocommand.application.ddaauto.usecases.CriarDdaAutoUseCase;
+import br.com.srportto.contratocommand.application.defaultService.contratacao.ContratacaoService;
+import br.com.srportto.contratocommand.application.usecases.ddaauto.usecases.CancelarDdaAutoUseCase;
+import br.com.srportto.contratocommand.application.usecases.ddaauto.usecases.CriarDdaAutoUseCase;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.AutorizacaoCompletaResponseDto;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.CancelarAutorizacaoRequest;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.CriarAutorizacaoRequest;

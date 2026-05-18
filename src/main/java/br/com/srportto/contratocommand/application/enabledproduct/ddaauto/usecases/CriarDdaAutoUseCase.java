@@ -1,4 +1,4 @@
-package br.com.srportto.contratocommand.application.ddaauto.usecases;
+package br.com.srportto.contratocommand.application.usecases.ddaauto.usecases;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,9 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
-import br.com.srportto.contratocommand.application.contratacao.ContratacaoValidator;
-import br.com.srportto.contratocommand.application.ddaauto.DdaAutoAutorizacaoMapper;
-import br.com.srportto.contratocommand.application.ddaauto.DdaAutoAutorizacaoRepository;
+import br.com.srportto.contratocommand.application.defaultService.contratacao.ContratacaoValidator;
+import br.com.srportto.contratocommand.application.usecases.ddaauto.DdaAutoAutorizacaoMapper;
+import br.com.srportto.contratocommand.application.usecases.ddaauto.DdaAutoAutorizacaoRepository;
 import br.com.srportto.contratocommand.domain.entities.Autorizacao;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.AutorizacaoCompletaResponseDto;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.CriarAutorizacaoRequest;

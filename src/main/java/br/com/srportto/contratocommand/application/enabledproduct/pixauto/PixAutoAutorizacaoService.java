@@ -1,4 +1,4 @@
-package br.com.srportto.contratocommand.application.pixauto;
+package br.com.srportto.contratocommand.application.usecases.pixauto;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,11 +11,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import br.com.srportto.contratocommand.application.ContratacaoService;
-import br.com.srportto.contratocommand.application.contratacao.ContratacaoValidator;
+import br.com.srportto.contratocommand.application.defaultService.contratacao.ContratacaoService;
+import br.com.srportto.contratocommand.application.defaultService.contratacao.ContratacaoValidator;
 import br.com.srportto.contratocommand.domain.entities.Autorizacao;
 import br.com.srportto.contratocommand.domain.entities.Cancelamento;
-import br.com.srportto.contratocommand.domain.enums.TipoProduto;
 import br.com.srportto.contratocommand.domain.utilities.ControleExpurgoAutorizacao;
 import br.com.srportto.contratocommand.domain.utilities.ReversibleUUIDv7;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.AutorizacaoCompletaResponseDto;

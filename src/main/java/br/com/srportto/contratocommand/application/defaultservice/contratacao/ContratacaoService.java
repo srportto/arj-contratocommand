@@ -1,4 +1,4 @@
-package br.com.srportto.contratocommand.application;
+package br.com.srportto.contratocommand.application.contratacao;
 
 import br.com.srportto.contratocommand.entrypoint.contratosrest.AutorizacaoCompletaResponseDto;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.CancelarAutorizacaoRequest;

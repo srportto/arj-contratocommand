@@ -1,4 +1,4 @@
-package br.com.srportto.contratocommand.application.pixauto;
+package br.com.srportto.contratocommand.application.usecases.pixauto;
 
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
