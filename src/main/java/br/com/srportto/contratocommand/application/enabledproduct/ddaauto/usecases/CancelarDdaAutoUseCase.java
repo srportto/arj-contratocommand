@@ -1,4 +1,4 @@
-package br.com.srportto.contratocommand.application.usecases.ddaauto.usecases;
+package br.com.srportto.contratocommand.application.enabledproduct.ddaauto.usecases;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import br.com.srportto.contratocommand.application.usecases.ddaauto.DdaAutoAutorizacaoRepository;
+import br.com.srportto.contratocommand.application.enabledproduct.ddaauto.DdaAutoAutorizacaoRepository;
 import br.com.srportto.contratocommand.domain.entities.Autorizacao;
 import br.com.srportto.contratocommand.domain.entities.Cancelamento;
 import br.com.srportto.contratocommand.domain.utilities.ControleExpurgoAutorizacao;

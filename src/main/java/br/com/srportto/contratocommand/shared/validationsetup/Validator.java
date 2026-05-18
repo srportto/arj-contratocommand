@@ -1,4 +1,4 @@
-package br.com.srportto.contratocommand.application.validationSetUp;
+package br.com.srportto.contratocommand.shared.validationsetup;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package br.com.srportto.contratocommand.application.usecases.pixauto;
+package br.com.srportto.contratocommand.application.enabledproduct.pixauto;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

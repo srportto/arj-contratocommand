@@ -1,4 +1,4 @@
-package br.com.srportto.contratocommand.application.usecases.ddaauto;
+package br.com.srportto.contratocommand.application.enabledproduct.ddaauto;
 
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;

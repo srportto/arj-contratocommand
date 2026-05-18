@@ -1,4 +1,4 @@
-package br.com.srportto.contratocommand.application.usecases.ddaauto;
+package br.com.srportto.contratocommand.application.enabledproduct.ddaauto;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

@@ -11,6 +11,9 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import br.com.srportto.contratocommand.application.enabledproduct.pixauto.PixAutoAutorizacaoMapper;
+import br.com.srportto.contratocommand.application.enabledproduct.pixauto.PixAutoAutorizacaoRepository;
+import br.com.srportto.contratocommand.application.enabledproduct.pixauto.PixAutoAutorizacaoService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,10 +27,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import br.com.srportto.contratocommand.application.contratacao.ContratacaoValidator;
+import br.com.srportto.contratocommand.application.defaultservice.contratacao.ContratacaoValidator;
 import br.com.srportto.contratocommand.domain.entities.Autorizacao;
 import br.com.srportto.contratocommand.domain.entities.IdAutorizacao;
-import br.com.srportto.contratocommand.domain.enums.TipoProduto;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.AutorizacaoCompletaResponseDto;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.CriarAutorizacaoRequest;
 import br.com.srportto.contratocommand.shared.exceptions.BusinessException;

@@ -13,8 +13,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 
-import br.com.srportto.contratocommand.application.ContratacaoOrquestradorService;
-import br.com.srportto.contratocommand.application.pixauto.PixAutoAutorizacaoService;
+import br.com.srportto.contratocommand.application.defaultservice.contratacao.ContratacaoOrquestradorService;
+import br.com.srportto.contratocommand.application.enabledproduct.pixauto.PixAutoAutorizacaoService;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.AutorizacaoCompletaResponseDto;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.CancelarAutorizacaoRequest;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.CriarAutorizacaoRequest;
@@ -24,11 +24,11 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/autorizacao")
 public class AutorizacaoController {
 
-    private final ContratacaoOrquestradorService orquestradorService;
+    private final ContratacaoOrquestradorService orquestradorContratacaoService;
     private final PixAutoAutorizacaoService pixAutoService; // Mantido para o listarAtivas
 
     public AutorizacaoController(ContratacaoOrquestradorService orquestradorService, PixAutoAutorizacaoService pixAutoService) {
-        this.orquestradorService = orquestradorService;
+        this.orquestradorContratacaoService = orquestradorService;
         this.pixAutoService = pixAutoService;
     }
 
@@ -50,7 +50,7 @@ public class AutorizacaoController {
     @PostMapping
     public ResponseEntity<AutorizacaoCompletaResponseDto> insert(
             @RequestBody @Valid CriarAutorizacaoRequest requestRecord) {
-        AutorizacaoCompletaResponseDto autorizadaResponse = orquestradorService.criar(requestRecord);
+        AutorizacaoCompletaResponseDto autorizadaResponse = orquestradorContratacaoService.criar(requestRecord);
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
@@ -63,7 +63,7 @@ public class AutorizacaoController {
     @PatchMapping("/{idAutorizacao}/cancelar")
     public ResponseEntity<AutorizacaoCompletaResponseDto> cancelar(@PathVariable String idAutorizacao,
             @RequestBody @Valid CancelarAutorizacaoRequest requestRecord) {
-        AutorizacaoCompletaResponseDto autorizacaoCanceladaResponse = orquestradorService.cancelar(idAutorizacao, requestRecord);
+        AutorizacaoCompletaResponseDto autorizacaoCanceladaResponse = orquestradorContratacaoService.cancelar(idAutorizacao, requestRecord);
 
         return ResponseEntity.ok(autorizacaoCanceladaResponse);
     }
