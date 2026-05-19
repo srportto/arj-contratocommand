@@ -1,5 +1,7 @@
 package br.com.srportto.contratocommand.entrypoint;
 
+import br.com.srportto.contratocommand.application.defaultservice.cancelamento.CancelamentoOrquestradorService;
+import br.com.srportto.contratocommand.domain.enums.TipoProduto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -16,7 +18,7 @@ import java.util.List;
 import br.com.srportto.contratocommand.application.defaultservice.contratacao.ContratacaoOrquestradorService;
 import br.com.srportto.contratocommand.application.enabledproduct.pixauto.PixAutoAutorizacaoService;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.AutorizacaoCompletaResponseDto;
-import br.com.srportto.contratocommand.entrypoint.contratosrest.CancelarAutorizacaoRequest;
+import br.com.srportto.contratocommand.entrypoint.contratosrest.CancelarAutorizacaoRequestDto;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.CriarAutorizacaoRequest;
 import jakarta.validation.Valid;
 
@@ -25,6 +27,7 @@ import jakarta.validation.Valid;
 public class AutorizacaoController {
 
     private final ContratacaoOrquestradorService orquestradorContratacaoService;
+    private final CancelamentoOrquestradorService orquestradorCancelamentoService;
     private final PixAutoAutorizacaoService pixAutoService; // Mantido para o listarAtivas
 
     public AutorizacaoController(ContratacaoOrquestradorService orquestradorService, PixAutoAutorizacaoService pixAutoService) {
@@ -61,9 +64,14 @@ public class AutorizacaoController {
     }
 
     @PatchMapping("/{idAutorizacao}/cancelar")
-    public ResponseEntity<AutorizacaoCompletaResponseDto> cancelar(@PathVariable String idAutorizacao,
-            @RequestBody @Valid CancelarAutorizacaoRequest requestRecord) {
-        AutorizacaoCompletaResponseDto autorizacaoCanceladaResponse = orquestradorContratacaoService.cancelar(idAutorizacao, requestRecord);
+    public ResponseEntity<AutorizacaoCompletaResponseDto> cancelar(@PathVariable String idAutorizacao, @PathVariable String tipoProduto,
+            @RequestBody @Valid CancelarAutorizacaoRequestDto request) {
+
+        request.setIdAutorizacao(idAutorizacao);
+        var produto = TipoProduto.obterTipoProdutoEnumPorNome(tipoProduto);
+        request.setProduto(produto);
+
+        AutorizacaoCompletaResponseDto autorizacaoCanceladaResponse = orquestradorCancelamentoService.cancelar(request);
 
         return ResponseEntity.ok(autorizacaoCanceladaResponse);
     }

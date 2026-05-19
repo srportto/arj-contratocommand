@@ -26,4 +26,14 @@ public enum TipoProduto {
         throw new IllegalArgumentException(
                 String.format("Tipo de produto %d não conhecido ", tipoProdutoId));
     }
+
+    public static TipoProduto obterTipoProdutoEnumPorNome(String nomeProduto) {
+        for (TipoProduto tipoEnum : TipoProduto.values()) {
+            if (tipoEnum.name().equalsIgnoreCase(nomeProduto)) {
+                return tipoEnum;
+            }
+        }
+        throw new IllegalArgumentException(
+                String.format("Produto %d não conhecido ", nomeProduto));
+    }
 }

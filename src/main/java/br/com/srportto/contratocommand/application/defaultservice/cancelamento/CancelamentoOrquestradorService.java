@@ -1,7 +1,8 @@
-package br.com.srportto.contratocommand.application.defaultservice.contratacao;
+package br.com.srportto.contratocommand.application.defaultservice.cancelamento;
+
 
 import br.com.srportto.contratocommand.entrypoint.contratosrest.AutorizacaoCompletaResponseDto;
-import br.com.srportto.contratocommand.entrypoint.contratosrest.CriarAutorizacaoRequest;
+import br.com.srportto.contratocommand.entrypoint.contratosrest.CancelarAutorizacaoRequestDto;
 import br.com.srportto.contratocommand.shared.exceptions.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -10,16 +11,16 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ContratacaoOrquestradorService {
+public class CancelamentoOrquestradorService {
 
-    private final List<ContratacaoService> produtosHabilitados;
+    private final List<CancelamentoService> produtosHabilitados;
 
-    public AutorizacaoCompletaResponseDto criar(CriarAutorizacaoRequest request) {
-        ContratacaoService produtoHabilitado = produtosHabilitados.stream()
+    public AutorizacaoCompletaResponseDto cancelar(CancelarAutorizacaoRequestDto request) {
+        CancelamentoService produtoHabilitado = produtosHabilitados.stream()
                 .filter(s -> s.validaServicoSuportado(request))
                 .findFirst()
-                .orElseThrow(() -> new BusinessException("Produto não suportado ou inválido (tipoProduto: " + request.tipoProduto() + ")"));
+                .orElseThrow(() -> new BusinessException("Produto não suportado ou inválido (tipoProduto: " + request.getProduto().name() + ")"));
 
-        return produtoHabilitado.criarAutorizacao(request);
+        return produtoHabilitado.cancelarAutorizacao(request);
     }
 }

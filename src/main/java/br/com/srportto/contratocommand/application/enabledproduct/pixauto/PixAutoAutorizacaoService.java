@@ -18,7 +18,7 @@ import br.com.srportto.contratocommand.domain.entities.Cancelamento;
 import br.com.srportto.contratocommand.domain.utilities.ControleExpurgoAutorizacao;
 import br.com.srportto.contratocommand.domain.utilities.ReversibleUUIDv7;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.AutorizacaoCompletaResponseDto;
-import br.com.srportto.contratocommand.entrypoint.contratosrest.CancelarAutorizacaoRequest;
+import br.com.srportto.contratocommand.entrypoint.contratosrest.CancelarAutorizacaoRequestDto;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.CriarAutorizacaoRequest;
 import br.com.srportto.contratocommand.shared.exceptions.BusinessException;
 import lombok.AllArgsConstructor;
@@ -36,7 +36,7 @@ public class PixAutoAutorizacaoService implements ContratacaoService {
   private final ContratacaoValidator contratacaoValidator;
 
   @Override
-  public boolean supports(CriarAutorizacaoRequest request) {
+  public boolean validaServicoSuportado(CriarAutorizacaoRequest request) {
     // Retorna true se for um tipo de produto que o PIX Automático suporta
     return request.tipoProduto() != null && "PIX_AUTO".equals(request.tipoProduto().toUpperCase());
   }
@@ -47,7 +47,7 @@ public class PixAutoAutorizacaoService implements ContratacaoService {
   }
 
   @Override
-  public AutorizacaoCompletaResponseDto cancelarAutorizacao(String idAutorizacao, CancelarAutorizacaoRequest request) {
+  public AutorizacaoCompletaResponseDto cancelarAutorizacao(String idAutorizacao, CancelarAutorizacaoRequestDto request) {
     return cancelar(idAutorizacao, request);
   }
 
@@ -157,7 +157,7 @@ public class PixAutoAutorizacaoService implements ContratacaoService {
     }
   }
 
-  public AutorizacaoCompletaResponseDto cancelar(String idAutorizacao, CancelarAutorizacaoRequest request) {
+  public AutorizacaoCompletaResponseDto cancelar(String idAutorizacao, CancelarAutorizacaoRequestDto request) {
     log.info("Iniciando cancelamento de autorização {}", idAutorizacao);
 
     var idParticaoAutorizacao = ReversibleUUIDv7.extract(UUID.fromString(idAutorizacao));

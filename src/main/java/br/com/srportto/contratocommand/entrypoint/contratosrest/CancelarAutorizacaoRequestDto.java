@@ -2,17 +2,30 @@ package br.com.srportto.contratocommand.entrypoint.contratosrest;
 
 import java.util.UUID;
 
+import br.com.srportto.contratocommand.domain.enums.TipoProduto;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-public record CancelarAutorizacaoRequest(
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class CancelarAutorizacaoRequestDto{
   
     @NotNull(message = "o campo 'codigoCanalCancelamento' é obrigatorio.")
-    String codigoCanalCancelamento,
+    private String codigoCanalCancelamento;
 
     @NotNull  (message = "O campo 'idPessoaCancelamento' é obrigatório.")
-    UUID idPessoaCancelamento,
+    private UUID idPessoaCancelamento;
 
-    String motivoCancelamento
+    private String motivoCancelamento;
 
-) {
+    private String idAutorizacao;
+
+    private TipoProduto produto;
+
 }

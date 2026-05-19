@@ -15,7 +15,7 @@ import br.com.srportto.contratocommand.domain.entities.Cancelamento;
 import br.com.srportto.contratocommand.domain.utilities.ControleExpurgoAutorizacao;
 import br.com.srportto.contratocommand.domain.utilities.ReversibleUUIDv7;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.AutorizacaoCompletaResponseDto;
-import br.com.srportto.contratocommand.entrypoint.contratosrest.CancelarAutorizacaoRequest;
+import br.com.srportto.contratocommand.entrypoint.contratosrest.CancelarAutorizacaoRequestDto;
 import br.com.srportto.contratocommand.shared.exceptions.BusinessException;
 import lombok.AllArgsConstructor;
 
@@ -28,8 +28,10 @@ public class CancelarDdaAutoUseCase {
     private final DdaAutoAutorizacaoRepository repository;
 
     @Transactional
-    public AutorizacaoCompletaResponseDto executar(String idAutorizacaoStr, CancelarAutorizacaoRequest request) {
-        log.info("Iniciando cancelamento de autorização DDA {}", idAutorizacaoStr);
+    public AutorizacaoCompletaResponseDto executar(CancelarAutorizacaoRequestDto request) {
+        log.info("Iniciando cancelamento de autorização DDA {}", request.getIdAutorizacao());
+
+        var idAutorizacaoStr = request.getIdAutorizacao();
 
         var idParticaoAutorizacao = ReversibleUUIDv7.extract(UUID.fromString(idAutorizacaoStr));
 
@@ -40,13 +42,13 @@ public class CancelarDdaAutoUseCase {
 
         var dataHoraCancelamento = LocalDateTime.now();
         dadosCancelamento.setDataHoraCancelamento(dataHoraCancelamento);
-        dadosCancelamento.setCodigoCanalCancelamento(request.codigoCanalCancelamento());
-        dadosCancelamento.setIdPessoaCancelamento(request.idPessoaCancelamento());
+        dadosCancelamento.setCodigoCanalCancelamento(request.getCodigoCanalCancelamento());
+        dadosCancelamento.setIdPessoaCancelamento(request.getIdPessoaCancelamento());
 
         autorizacao.setDataHoraUltimaAtualizacao(dataHoraCancelamento);
 
-        if (request.motivoCancelamento() != null) {
-            dadosCancelamento.setMotivoCancelamento(request.motivoCancelamento());
+        if (request.getMotivoCancelamento() != null) {
+            dadosCancelamento.setMotivoCancelamento(request.getMotivoCancelamento());
         }
 
         autorizacao.setCancelamento(dadosCancelamento);

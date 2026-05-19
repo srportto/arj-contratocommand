@@ -1,30 +1,31 @@
 package br.com.srportto.contratocommand.application.enabledproduct.ddaauto;
 
-import br.com.srportto.contratocommand.domain.enums.TipoProduto;
-import org.springframework.stereotype.Service;
-
+import br.com.srportto.contratocommand.application.defaultservice.cancelamento.CancelamentoService;
 import br.com.srportto.contratocommand.application.defaultservice.contratacao.ContratacaoService;
 import br.com.srportto.contratocommand.application.enabledproduct.ddaauto.usecases.CancelarDdaAutoUseCase;
 import br.com.srportto.contratocommand.application.enabledproduct.ddaauto.usecases.CriarDdaAutoUseCase;
+import br.com.srportto.contratocommand.domain.enums.TipoProduto;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.AutorizacaoCompletaResponseDto;
+import br.com.srportto.contratocommand.entrypoint.contratosrest.CancelarAutorizacaoRequestDto;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.CriarAutorizacaoRequest;
 import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class DdaAutoAutorizacaoService implements ContratacaoService {
+public class DdaAutoCancelamentoService implements CancelamentoService {
 
-    private final CriarDdaAutoUseCase criarDdaAutoUseCase;
+
     private final CancelarDdaAutoUseCase cancelarDdaAutoUseCase;
 
     @Override
-    public boolean validaServicoSuportado(CriarAutorizacaoRequest request) {
-        return request.tipoProduto() != null && TipoProduto.DDA_AUTO.name().equalsIgnoreCase(request.tipoProduto());
+    public boolean validaServicoSuportado(CancelarAutorizacaoRequestDto request) {
+        return request.getProduto() != null && TipoProduto.DDA_AUTO.name().equalsIgnoreCase(request.getProduto().name());
     }
 
     @Override
-    public AutorizacaoCompletaResponseDto criarAutorizacao(CriarAutorizacaoRequest request) {
-        return criarDdaAutoUseCase.executar(request);
+    public AutorizacaoCompletaResponseDto cancelarAutorizacao(CancelarAutorizacaoRequestDto request) {
+        return cancelarDdaAutoUseCase.executar(request);
     }
 
 

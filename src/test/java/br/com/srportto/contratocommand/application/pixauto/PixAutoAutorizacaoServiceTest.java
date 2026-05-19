@@ -56,7 +56,7 @@ class PixAutoAutorizacaoServiceTest {
 
     @Test
     @DisplayName("supports - deve retornar true para TipoProduto.PIX_AUTO")
-    void testSupports_True() {
+    void testValidaServicoSuportado_True() {
         CriarAutorizacaoRequest request = new CriarAutorizacaoRequest(
                 LocalDate.now().plusDays(30),
                 TIPO_PRODUTO_PIX_AUTO,
@@ -74,12 +74,12 @@ class PixAutoAutorizacaoServiceTest {
                 UUID.fromString("550e8400-e29b-41d4-a716-446655440003"),
                 null
         );
-        assertTrue(service.supports(request));
+        assertTrue(service.validaServicoSuportado(request));
     }
 
     @Test
     @DisplayName("supports - deve retornar false para TipoProduto.DDA_AUTO")
-    void testSupports_False() {
+    void testValidaServicoSuportado_False() {
         CriarAutorizacaoRequest request = new CriarAutorizacaoRequest(
                 LocalDate.now().plusDays(30),
                 TIPO_PRODUTO_DDA_AUTO,
@@ -97,12 +97,12 @@ class PixAutoAutorizacaoServiceTest {
                 UUID.fromString("550e8400-e29b-41d4-a716-446655440003"),
                 null
         );
-        assertFalse(service.supports(request));
+        assertFalse(service.validaServicoSuportado(request));
     }
 
     @Test
     @DisplayName("supports - deve retornar false para tipoProduto nulo")
-    void testSupports_NullTipoProduto() {
+    void testValidaServicoSuportado_NullTipoProduto() {
         CriarAutorizacaoRequest request = new CriarAutorizacaoRequest(
                 LocalDate.now().plusDays(30),
                 null, // tipoProduto nulo
@@ -120,7 +120,7 @@ class PixAutoAutorizacaoServiceTest {
                 UUID.fromString("550e8400-e29b-41d4-a716-446655440003"),
                 null
         );
-        assertFalse(service.supports(request));
+        assertFalse(service.validaServicoSuportado(request));
     }
 
     @Test
