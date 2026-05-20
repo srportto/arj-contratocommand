@@ -1,6 +1,8 @@
 package br.com.srportto.contratocommand.application.enabledproduct.ddaauto;
 
+import br.com.srportto.contratocommand.application.defaultservice.cancelamento.CancelamentoService;
 import br.com.srportto.contratocommand.domain.enums.TipoProduto;
+import br.com.srportto.contratocommand.entrypoint.contratosrest.CancelarAutorizacaoRequestDto;
 import org.springframework.stereotype.Service;
 
 import br.com.srportto.contratocommand.application.defaultservice.contratacao.ContratacaoService;
@@ -12,7 +14,7 @@ import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
-public class DdaAutoAutorizacaoService implements ContratacaoService {
+public class DdaAutoAutorizacaoService implements ContratacaoService, CancelamentoService {
 
     private final CriarDdaAutoUseCase criarDdaAutoUseCase;
     private final CancelarDdaAutoUseCase cancelarDdaAutoUseCase;
@@ -28,4 +30,13 @@ public class DdaAutoAutorizacaoService implements ContratacaoService {
     }
 
 
+    @Override
+    public boolean validaServicoSuportado(CancelarAutorizacaoRequestDto request) {
+        return false;
+    }
+
+    @Override
+    public AutorizacaoCompletaResponseDto cancelarAutorizacao(CancelarAutorizacaoRequestDto request) {
+        return CancelamentoService.super.cancelarAutorizacao(request);
+    }
 }
