@@ -5,11 +5,11 @@ import br.com.srportto.contratocommand.entrypoint.contratosrest.AutorizacaoCompl
 import br.com.srportto.contratocommand.entrypoint.contratosrest.CancelarAutorizacaoRequestDto;
 import br.com.srportto.contratocommand.shared.exceptions.BusinessException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class CancelamentoOrquestradorService {
 
@@ -17,7 +17,7 @@ public class CancelamentoOrquestradorService {
 
     public AutorizacaoCompletaResponseDto cancelar(CancelarAutorizacaoRequestDto request) {
         CancelamentoService produtoHabilitado = produtosHabilitados.stream()
-                .filter(s -> s.validaServicoSuportado(request))
+                .filter(s -> s.validaCancelamentoSuportado(request))
                 .findFirst()
                 .orElseThrow(() -> new BusinessException("Produto não suportado ou inválido (tipoProduto: " + request.getProduto().name() + ")"));
 

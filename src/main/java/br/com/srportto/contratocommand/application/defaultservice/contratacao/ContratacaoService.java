@@ -5,7 +5,7 @@ import br.com.srportto.contratocommand.entrypoint.contratosrest.CriarAutorizacao
 
 public interface ContratacaoService {
 
-   boolean validaServicoSuportado(CriarAutorizacaoRequest request);
+   boolean validaContratacaoSuportada(CriarAutorizacaoRequest request);
 
    default AutorizacaoCompletaResponseDto criarAutorizacao(CriarAutorizacaoRequest request) {
       throw new UnsupportedOperationException("Método criarAutorizacao não implementado");

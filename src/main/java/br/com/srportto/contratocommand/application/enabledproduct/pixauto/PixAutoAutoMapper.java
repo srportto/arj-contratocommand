@@ -17,7 +17,7 @@ import br.com.srportto.contratocommand.entrypoint.contratosrest.CriarAutorizacao
 import br.com.srportto.contratocommand.shared.exceptions.BusinessException;
 
 @Mapper(componentModel = "spring")
-public interface PixAutoAutorizacaoMapper {
+public interface PixAutoAutoMapper {
 
     @Mapping(source = "valor", target = "valorAutorizacao")
     @Mapping(source = "frequencia", target = "frequenciaPagamento")

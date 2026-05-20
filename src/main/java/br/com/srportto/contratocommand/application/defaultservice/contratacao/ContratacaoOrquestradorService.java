@@ -4,11 +4,12 @@ import br.com.srportto.contratocommand.entrypoint.contratosrest.AutorizacaoCompl
 import br.com.srportto.contratocommand.entrypoint.contratosrest.CriarAutorizacaoRequest;
 import br.com.srportto.contratocommand.shared.exceptions.BusinessException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class ContratacaoOrquestradorService {
 
@@ -16,7 +17,7 @@ public class ContratacaoOrquestradorService {
 
     public AutorizacaoCompletaResponseDto criar(CriarAutorizacaoRequest request) {
         ContratacaoService produtoHabilitado = produtosHabilitados.stream()
-                .filter(s -> s.validaServicoSuportado(request))
+                .filter(s -> s.validaContratacaoSuportada(request))
                 .findFirst()
                 .orElseThrow(() -> new BusinessException("Produto não suportado ou inválido (tipoProduto: " + request.tipoProduto() + ")"));
 

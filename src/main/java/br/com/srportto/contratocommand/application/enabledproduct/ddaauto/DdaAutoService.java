@@ -14,13 +14,13 @@ import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
-public class DdaAutoAutorizacaoService implements ContratacaoService, CancelamentoService {
+public class DdaAutoService implements ContratacaoService, CancelamentoService {
 
     private final CriarDdaAutoUseCase criarDdaAutoUseCase;
     private final CancelarDdaAutoUseCase cancelarDdaAutoUseCase;
 
     @Override
-    public boolean validaServicoSuportado(CriarAutorizacaoRequest request) {
+    public boolean validaContratacaoSuportada(CriarAutorizacaoRequest request) {
         return request.tipoProduto() != null && TipoProduto.DDA_AUTO.name().equalsIgnoreCase(request.tipoProduto());
     }
 
@@ -31,12 +31,12 @@ public class DdaAutoAutorizacaoService implements ContratacaoService, Cancelamen
 
 
     @Override
-    public boolean validaServicoSuportado(CancelarAutorizacaoRequestDto request) {
-        return false;
+    public boolean validaCancelamentoSuportado(CancelarAutorizacaoRequestDto request) {
+        return request.getProduto() != null && TipoProduto.DDA_AUTO.name().equalsIgnoreCase(request.getProduto().name());
     }
 
     @Override
     public AutorizacaoCompletaResponseDto cancelarAutorizacao(CancelarAutorizacaoRequestDto request) {
-        return CancelamentoService.super.cancelarAutorizacao(request);
+        return cancelarDdaAutoUseCase.executar(request);
     }
 }

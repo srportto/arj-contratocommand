@@ -5,7 +5,7 @@ import br.com.srportto.contratocommand.entrypoint.contratosrest.CancelarAutoriza
 
 public interface CancelamentoService {
 
-   boolean validaServicoSuportado(CancelarAutorizacaoRequestDto request);
+   boolean validaCancelamentoSuportado(CancelarAutorizacaoRequestDto request);
 
 
    default AutorizacaoCompletaResponseDto cancelarAutorizacao(CancelarAutorizacaoRequestDto request) {
