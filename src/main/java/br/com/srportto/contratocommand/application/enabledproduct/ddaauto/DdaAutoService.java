@@ -26,7 +26,7 @@ public class DdaAutoService implements ContratacaoService, CancelamentoService {
 
     @Override
     public AutorizacaoCompletaResponseDto criarAutorizacao(CriarAutorizacaoRequest request) {
-        return criarDdaAutoUseCase.executar(request);
+        return criarDdaAutoUseCase.execute(request);
     }
 
 
@@ -37,6 +37,6 @@ public class DdaAutoService implements ContratacaoService, CancelamentoService {
 
     @Override
     public AutorizacaoCompletaResponseDto cancelarAutorizacao(CancelarAutorizacaoRequestDto request) {
-        return cancelarDdaAutoUseCase.executar(request);
+        return cancelarDdaAutoUseCase.execute(request);
     }
 }

@@ -136,14 +136,14 @@ class PixAutoAutorizacaoServiceTest {
         Autorizacao autorizacao = criarAutorizacao();
         AutorizacaoCompletaResponseDto responseDto = AutorizacaoCompletaResponseDto.from(autorizacao);
         
-        when(criarPixAutoUseCase.executar(request)).thenReturn(responseDto);
+        when(criarPixAutoUseCase.execute(request)).thenReturn(responseDto);
 
         // Act
         AutorizacaoCompletaResponseDto resultado = service.criarAutorizacao(request);
 
         // Assert
         assertNotNull(resultado);
-        verify(criarPixAutoUseCase).executar(request);
+        verify(criarPixAutoUseCase).execute(request);
     }
 
     @Test
@@ -161,14 +161,14 @@ class PixAutoAutorizacaoServiceTest {
         Autorizacao autorizacao = criarAutorizacao();
         AutorizacaoCompletaResponseDto responseDto = AutorizacaoCompletaResponseDto.from(autorizacao);
         
-        when(cancelarPixAutoUseCase.executar(request)).thenReturn(responseDto);
+        when(cancelarPixAutoUseCase.execute(request)).thenReturn(responseDto);
 
         // Act
         AutorizacaoCompletaResponseDto resultado = service.cancelarAutorizacao(request);
 
         // Assert
         assertNotNull(resultado);
-        verify(cancelarPixAutoUseCase).executar(request);
+        verify(cancelarPixAutoUseCase).execute(request);
     }
 
     // Helpers

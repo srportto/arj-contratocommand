@@ -25,7 +25,7 @@ public class PixAutoService implements ContratacaoService, CancelamentoService {
 
     @Override
     public AutorizacaoCompletaResponseDto criarAutorizacao(CriarAutorizacaoRequest request) {
-        return criarPixAutoUseCase.executar(request);
+        return criarPixAutoUseCase.execute(request);
     }
 
 
@@ -36,6 +36,6 @@ public class PixAutoService implements ContratacaoService, CancelamentoService {
 
     @Override
     public AutorizacaoCompletaResponseDto cancelarAutorizacao(CancelarAutorizacaoRequestDto request) {
-        return cancelarPixAutoUseCase.executar(request);
+        return cancelarPixAutoUseCase.execute(request);
     }
 }

@@ -31,7 +31,7 @@ public class CancelarDdaAutoUseCase {
     private final CancelamentoValidator cancelamentoValidator;
 
 
-    public AutorizacaoCompletaResponseDto executar(CancelarAutorizacaoRequestDto request) {
+    public AutorizacaoCompletaResponseDto execute(CancelarAutorizacaoRequestDto request) {
         log.info("Iniciando cancelamento de autorização DDA {}", request.getIdAutorizacao());
 
         var idAutorizacaoStr = request.getIdAutorizacao();

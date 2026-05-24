@@ -30,7 +30,7 @@ public class CancelarPixAutoUseCase {
     private final CancelamentoValidator cancelamentoValidator;
 
 
-    public AutorizacaoCompletaResponseDto executar(CancelarAutorizacaoRequestDto request) {
+    public AutorizacaoCompletaResponseDto execute(CancelarAutorizacaoRequestDto request) {
         log.info("Iniciando cancelamento de autorização Pix {}", request.getIdAutorizacao());
 
         var idAutorizacaoStr = request.getIdAutorizacao();

@@ -26,7 +26,7 @@ public class CriarPixAutoUseCase {
     private final ContratacaoValidator contratacaoValidator;
 
     @Transactional
-    public AutorizacaoCompletaResponseDto executar(CriarAutorizacaoRequest request) {
+    public AutorizacaoCompletaResponseDto execute(CriarAutorizacaoRequest request) {
         log.info("Iniciando criação de autorizacao pix-auto para empresa: {}", request.idAutorizacaoEmpresa());
 
         var dataFimVigenciaTratada = trataDataFimVigencia(request.dataFimVigencia(), request.codigoCanalContratacao());

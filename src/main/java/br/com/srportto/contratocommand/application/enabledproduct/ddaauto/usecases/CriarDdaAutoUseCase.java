@@ -27,7 +27,7 @@ public class CriarDdaAutoUseCase {
     private final ContratacaoValidator contratacaoValidator;
 
     @Transactional
-    public AutorizacaoCompletaResponseDto executar(CriarAutorizacaoRequest request) {
+    public AutorizacaoCompletaResponseDto execute(CriarAutorizacaoRequest request) {
         log.info("Iniciando criação de autorização DDA para empresa: {}", request.idAutorizacaoEmpresa());
 
         var dataFimVigenciaTratada = trataDataFimVigencia(request.dataFimVigencia(), request.codigoCanalContratacao());

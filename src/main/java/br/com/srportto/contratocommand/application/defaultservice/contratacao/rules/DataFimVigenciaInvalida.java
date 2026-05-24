@@ -22,7 +22,7 @@ public class DataFimVigenciaInvalida implements ContratacaoRule {
 
         if (dataFimVigencia.isBefore(LocalDate.now())) {
             throw new BusinessException(
-                    "A data de fim de vigência não pode ser no passado. Data informada: " + dataFimVigencia);
+                    "A data de fim de vigencia nao pode ser no passado. Data informada: " + dataFimVigencia);
         }
     }
 
