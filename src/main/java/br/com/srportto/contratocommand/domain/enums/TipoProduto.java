@@ -1,5 +1,6 @@
 package br.com.srportto.contratocommand.domain.enums;
 
+import br.com.srportto.contratocommand.shared.exceptions.BusinessException;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
@@ -23,8 +24,7 @@ public enum TipoProduto {
                 return tipoEnum;
             }
         }
-        throw new IllegalArgumentException(
-                String.format("Tipo de produto %d não conhecido ", tipoProdutoId));
+        throw new BusinessException(String.format("tipoProduto %d não conhecido ", tipoProdutoId));
     }
 
     public static TipoProduto obterTipoProdutoEnumPorNome(String nomeProduto) {
@@ -33,7 +33,6 @@ public enum TipoProduto {
                 return tipoEnum;
             }
         }
-        throw new IllegalArgumentException(
-                String.format("Produto %d não conhecido ", nomeProduto));
+        throw new BusinessException(String.format("Produto %s não conhecido ", nomeProduto));
     }
 }

@@ -1,8 +1,8 @@
 package br.com.srportto.contratocommand.application.enabledproduct.pixauto.usecases;
 
 import br.com.srportto.contratocommand.application.defaultservice.contratacao.ContratacaoValidator;
-import br.com.srportto.contratocommand.application.enabledproduct.pixauto.PixAutoAutoMapper;
-import br.com.srportto.contratocommand.application.enabledproduct.pixauto.PixAutoAutoRepository;
+import br.com.srportto.contratocommand.application.enabledproduct.pixauto.PixAutoMapper;
+import br.com.srportto.contratocommand.application.enabledproduct.pixauto.PixAutoRepository;
 import br.com.srportto.contratocommand.domain.entities.Autorizacao;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.AutorizacaoCompletaResponseDto;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.CriarAutorizacaoRequest;
@@ -21,8 +21,8 @@ public class CriarPixAutoUseCase {
 
     private static final Logger log = LoggerFactory.getLogger(CriarPixAutoUseCase.class);
 
-    private final PixAutoAutoRepository repository;
-    private final PixAutoAutoMapper mapper;
+    private final PixAutoRepository repository;
+    private final PixAutoMapper mapper;
     private final ContratacaoValidator contratacaoValidator;
 
     @Transactional

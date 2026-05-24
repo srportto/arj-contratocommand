@@ -2,7 +2,7 @@ package br.com.srportto.contratocommand.application.enabledproduct.pixauto.useca
 
 
 import br.com.srportto.contratocommand.application.defaultservice.cancelamento.CancelamentoValidator;
-import br.com.srportto.contratocommand.application.enabledproduct.pixauto.PixAutoAutoRepository;
+import br.com.srportto.contratocommand.application.enabledproduct.pixauto.PixAutoRepository;
 import br.com.srportto.contratocommand.domain.entities.Autorizacao;
 import br.com.srportto.contratocommand.domain.entities.Cancelamento;
 import br.com.srportto.contratocommand.domain.utilities.ControleExpurgoAutorizacao;
@@ -26,7 +26,7 @@ public class CancelarPixAutoUseCase {
 
     private static final Logger log = LoggerFactory.getLogger(CancelarPixAutoUseCase.class);
 
-    private final PixAutoAutoRepository repository;
+    private final PixAutoRepository repository;
     private final CancelamentoValidator cancelamentoValidator;
 
 

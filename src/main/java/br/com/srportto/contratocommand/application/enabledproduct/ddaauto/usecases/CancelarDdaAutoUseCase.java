@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import br.com.srportto.contratocommand.application.enabledproduct.ddaauto.DdaAutoAutorizacaoRepository;
+import br.com.srportto.contratocommand.application.enabledproduct.ddaauto.DdaAutoRepository;
 import br.com.srportto.contratocommand.domain.entities.Autorizacao;
 import br.com.srportto.contratocommand.domain.entities.Cancelamento;
 import br.com.srportto.contratocommand.domain.utilities.ControleExpurgoAutorizacao;
@@ -27,7 +27,7 @@ public class CancelarDdaAutoUseCase {
 
     private static final Logger log = LoggerFactory.getLogger(CancelarDdaAutoUseCase.class);
 
-    private final DdaAutoAutorizacaoRepository repository;
+    private final DdaAutoRepository repository;
     private final CancelamentoValidator cancelamentoValidator;
 
 

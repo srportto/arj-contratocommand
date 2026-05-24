@@ -1,4 +1,4 @@
-package br.com.srportto.contratocommand.application.enabledproduct.ddaauto;
+package br.com.srportto.contratocommand.application.enabledproduct.pixauto;
 
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
@@ -17,7 +17,7 @@ import br.com.srportto.contratocommand.entrypoint.contratosrest.CriarAutorizacao
 import br.com.srportto.contratocommand.shared.exceptions.BusinessException;
 
 @Mapper(componentModel = "spring")
-public interface DdaAutoAutorizacaoMapper {
+public interface PixAutoMapper {
 
     @Mapping(source = "valor", target = "valorAutorizacao")
     @Mapping(source = "frequencia", target = "frequenciaPagamento")
@@ -38,11 +38,10 @@ public interface DdaAutoAutorizacaoMapper {
     @AfterMapping
     default void afterMapping(CriarAutorizacaoRequest request, @MappingTarget Autorizacao autorizacao) {
 
-        // Validação e conversão de tipoProduto: String -> enum TipoProduto para DDA_AUTO
         var tipoStr = request.tipoProduto();
-        if (tipoStr == null || !"DDA_AUTO".equals(tipoStr.toUpperCase())) {
+        if (!TipoProduto.PIX_AUTO.name().equalsIgnoreCase(tipoStr)) {
             throw new BusinessException(
-                "O campo 'tipoProduto' é inválido para este serviço. Valores permitidos: DDA_AUTO." +
+                "O campo 'tipoProduto' e invalido. Valores permitidos: PIX_AUTO." +
                 " Valor recebido: '" + tipoStr + "'"
             );
         }
@@ -59,7 +58,7 @@ public interface DdaAutoAutorizacaoMapper {
         autorizacao.getIdAutorizacao().setIdParticaoConta(idParticaoConta);
 
         autorizacao.setStatus(1); // ATIVO
-        autorizacao.setMotivoStatus("Autorizacao criada com sucesso (DDA Automatico)");
+        autorizacao.setMotivoStatus("Autorizacao criada com sucesso");
         autorizacao.setDataInicioVigencia(LocalDate.now());
 
         LocalDateTime agora = LocalDateTime.now();
