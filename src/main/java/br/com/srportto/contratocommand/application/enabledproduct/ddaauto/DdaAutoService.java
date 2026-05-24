@@ -32,7 +32,7 @@ public class DdaAutoService implements ContratacaoService, CancelamentoService {
 
     @Override
     public boolean validaCancelamentoSuportado(CancelarAutorizacaoRequestDto request) {
-        return request.getProduto() != null && TipoProduto.DDA_AUTO.name().equalsIgnoreCase(request.getProduto().name());
+        return request.getProdutoHeaderRequest() != null && TipoProduto.DDA_AUTO.name().equalsIgnoreCase(request.getProdutoHeaderRequest().name());
     }
 
     @Override

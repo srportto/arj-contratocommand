@@ -31,7 +31,7 @@ public class PixAutoService implements ContratacaoService, CancelamentoService {
 
     @Override
     public boolean validaCancelamentoSuportado(CancelarAutorizacaoRequestDto request) {
-        return request.getProduto() != null && TipoProduto.PIX_AUTO.name().equalsIgnoreCase(request.getProduto().name());
+        return request.getProdutoHeaderRequest() != null && TipoProduto.PIX_AUTO.name().equalsIgnoreCase(request.getProdutoHeaderRequest().name());
     }
 
     @Override

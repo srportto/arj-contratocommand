@@ -1,6 +1,7 @@
 package br.com.srportto.contratocommand.application.enabledproduct.pixauto.usecases;
 
 
+import br.com.srportto.contratocommand.application.defaultservice.cancelamento.CancelamentoValidator;
 import br.com.srportto.contratocommand.application.enabledproduct.pixauto.PixAutoAutoRepository;
 import br.com.srportto.contratocommand.domain.entities.Autorizacao;
 import br.com.srportto.contratocommand.domain.entities.Cancelamento;
@@ -26,8 +27,9 @@ public class CancelarPixAutoUseCase {
     private static final Logger log = LoggerFactory.getLogger(CancelarPixAutoUseCase.class);
 
     private final PixAutoAutoRepository repository;
+    private final CancelamentoValidator cancelamentoValidator;
 
-    @Transactional
+
     public AutorizacaoCompletaResponseDto executar(CancelarAutorizacaoRequestDto request) {
         log.info("Iniciando cancelamento de autorização Pix {}", request.getIdAutorizacao());
 
@@ -36,6 +38,10 @@ public class CancelarPixAutoUseCase {
         var idParticaoAutorizacao = ReversibleUUIDv7.extract(UUID.fromString(idAutorizacaoStr));
 
         var autorizacao = obterAutorizacaoPorIdEParticao(idAutorizacaoStr, idParticaoAutorizacao);
+        var idProdutoAutorizacao = autorizacao.getTipoProduto();
+        request.setTipoProdutoDoIdAutorizacao(idProdutoAutorizacao);
+
+        cancelamentoValidator.validar(request);
 
         autorizacao.setStatus(3); // cancelada
         var dadosCancelamento = new Cancelamento();
@@ -75,6 +81,7 @@ public class CancelarPixAutoUseCase {
         }
     }
 
+    @Transactional
     private Autorizacao transferirParaNovaParticao(Autorizacao autorizacao, Integer novaParticao) {
         UUID idAutorizacaoUuid = autorizacao.getIdAutorizacao().getIdAutorizacao();
         Integer particaoAntiga = autorizacao.getIdAutorizacao().getIdParticaoConta();
@@ -88,11 +95,10 @@ public class CancelarPixAutoUseCase {
                 idAutorizacaoUuid, particaoAntiga, novaParticao);
 
         // Delete do banco com a chave antiga
-        repository.deleteById(autorizacao.getIdAutorizacao());
+         repository.deleteById(autorizacao.getIdAutorizacao());
 
         // Altera a partição e salva novamente na nova partição
         autorizacao.getIdAutorizacao().setIdParticaoConta(novaParticao);
-
         return repository.save(autorizacao);
     }
 }

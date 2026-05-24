@@ -19,7 +19,7 @@ public class CancelamentoOrquestradorService {
         CancelamentoService produtoHabilitado = produtosHabilitados.stream()
                 .filter(s -> s.validaCancelamentoSuportado(request))
                 .findFirst()
-                .orElseThrow(() -> new BusinessException("Produto não suportado ou inválido (tipoProduto: " + request.getProduto().name() + ")"));
+                .orElseThrow(() -> new BusinessException("Produto nao suportado ou invalido (tipoProduto: " + request.getProdutoHeaderRequest().name()+ ")"));
 
         return produtoHabilitado.cancelarAutorizacao(request);
     }

@@ -26,6 +26,8 @@ public class CancelarAutorizacaoRequestDto{
 
     private String idAutorizacao;
 
-    private TipoProduto produto;
+    private TipoProduto produtoHeaderRequest;
+
+    private TipoProduto TipoProdutoDoIdAutorizacao;
 
 }

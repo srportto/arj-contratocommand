@@ -66,7 +66,7 @@ public class AutorizacaoController {
 
         request.setIdAutorizacao(idAutorizacao);
         var produto = TipoProduto.obterTipoProdutoEnumPorNome(tipoProduto);
-        request.setProduto(produto);
+        request.setProdutoHeaderRequest(produto);
 
         AutorizacaoCompletaResponseDto autorizacaoCanceladaResponse = orquestradorCancelamentoService.cancelar(request);
 

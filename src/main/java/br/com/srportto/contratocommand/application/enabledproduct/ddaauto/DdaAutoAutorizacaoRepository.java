@@ -1,6 +1,7 @@
 package br.com.srportto.contratocommand.application.enabledproduct.ddaauto;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -11,6 +12,7 @@ import java.util.UUID;
 
 import br.com.srportto.contratocommand.domain.entities.Autorizacao;
 import br.com.srportto.contratocommand.domain.entities.IdAutorizacao;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface DdaAutoAutorizacaoRepository extends JpaRepository<Autorizacao, IdAutorizacao> {
@@ -28,4 +30,5 @@ public interface DdaAutoAutorizacaoRepository extends JpaRepository<Autorizacao,
     Optional<Autorizacao> findByIdAutorizacaoAndParticao(
             @Param("idAutorizacao") UUID idAutorizacao,
             @Param("idParticaoConta") Integer idParticaoConta);
+
 }

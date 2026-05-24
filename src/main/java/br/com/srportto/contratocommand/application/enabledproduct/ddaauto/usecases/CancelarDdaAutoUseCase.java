@@ -1,10 +1,11 @@
 package br.com.srportto.contratocommand.application.enabledproduct.ddaauto.usecases;
 
+import br.com.srportto.contratocommand.application.defaultservice.cancelamento.CancelamentoValidator;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -18,6 +19,7 @@ import br.com.srportto.contratocommand.entrypoint.contratosrest.AutorizacaoCompl
 import br.com.srportto.contratocommand.entrypoint.contratosrest.CancelarAutorizacaoRequestDto;
 import br.com.srportto.contratocommand.shared.exceptions.BusinessException;
 import lombok.AllArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @AllArgsConstructor
@@ -26,8 +28,9 @@ public class CancelarDdaAutoUseCase {
     private static final Logger log = LoggerFactory.getLogger(CancelarDdaAutoUseCase.class);
 
     private final DdaAutoAutorizacaoRepository repository;
+    private final CancelamentoValidator cancelamentoValidator;
 
-    @Transactional
+
     public AutorizacaoCompletaResponseDto executar(CancelarAutorizacaoRequestDto request) {
         log.info("Iniciando cancelamento de autorização DDA {}", request.getIdAutorizacao());
 
@@ -36,6 +39,11 @@ public class CancelarDdaAutoUseCase {
         var idParticaoAutorizacao = ReversibleUUIDv7.extract(UUID.fromString(idAutorizacaoStr));
 
         var autorizacao = obterAutorizacaoPorIdEParticao(idAutorizacaoStr, idParticaoAutorizacao);
+
+        var idProdutoAutorizacao = autorizacao.getTipoProduto();
+        request.setTipoProdutoDoIdAutorizacao(idProdutoAutorizacao);
+
+        cancelamentoValidator.validar(request);
 
         autorizacao.setStatus(3); // cancelada
         var dadosCancelamento = new Cancelamento();
@@ -75,6 +83,7 @@ public class CancelarDdaAutoUseCase {
         }
     }
 
+    @Transactional
     private Autorizacao transferirParaNovaParticao(Autorizacao autorizacao, Integer novaParticao) {
         UUID idAutorizacaoUuid = autorizacao.getIdAutorizacao().getIdAutorizacao();
         Integer particaoAntiga = autorizacao.getIdAutorizacao().getIdParticaoConta();
@@ -84,7 +93,7 @@ public class CancelarDdaAutoUseCase {
             return repository.save(autorizacao);
         }
 
-        log.info("Transferindo autorização DDA {} da partição {} para partição {}",
+        log.info("Transferindo autorização DDA{} da partição {} para partição {}",
                 idAutorizacaoUuid, particaoAntiga, novaParticao);
 
         // Delete do banco com a chave antiga
@@ -92,7 +101,7 @@ public class CancelarDdaAutoUseCase {
 
         // Altera a partição e salva novamente na nova partição
         autorizacao.getIdAutorizacao().setIdParticaoConta(novaParticao);
-
         return repository.save(autorizacao);
     }
+
 }

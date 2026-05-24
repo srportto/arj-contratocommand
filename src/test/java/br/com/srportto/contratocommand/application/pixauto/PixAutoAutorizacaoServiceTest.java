@@ -155,7 +155,7 @@ class PixAutoAutorizacaoServiceTest {
                 .codigoCanalCancelamento("C1")
                 .idPessoaCancelamento(UUID.fromString("550e8400-e29b-41d4-a716-446655440001"))
                 .motivoCancelamento("Teste cancelamento")
-                .produto(TipoProduto.PIX_AUTO)
+                .produtoHeaderRequest(TipoProduto.PIX_AUTO)
                 .build();
 
         Autorizacao autorizacao = criarAutorizacao();
