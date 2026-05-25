@@ -30,60 +30,15 @@ public class CriarDdaAutoUseCase {
     public AutorizacaoCompletaResponseDto execute(CriarAutorizacaoRequest request) {
         log.info("Iniciando criação de autorização DDA para empresa: {}", request.idAutorizacaoEmpresa());
 
-        var dataFimVigenciaTratada = trataDataFimVigencia(request.dataFimVigencia(), request.codigoCanalContratacao());
+        contratacaoValidator.validar(request);
 
-        CriarAutorizacaoRequest requestComDataFimTratada = new CriarAutorizacaoRequest(
-                dataFimVigenciaTratada,
-                request.tipoProduto(),
-                request.valor(),
-                request.idAutorizacaoEmpresa(),
-                request.valorLimite(),
-                request.frequencia(),
-                request.quantidadeDividasCiclo(),
-                request.indicadorUsoLimiteConta(),
-                request.codigoCanalContratacao(),
-                request.descricao(),
-                request.idUnicoContaContratante(),
-                request.idPessoaPagadora(),
-                request.idPessoaDevedora(),
-                request.idPessoaRecebedora(),
-                request.metadados());
-
-        validarValorLimite(request.valor(), request.valorLimite());
-
-        contratacaoValidator.validar(requestComDataFimTratada);
-
-        Autorizacao autorizacaoMontada = mapper.toDomain(requestComDataFimTratada);
-        
-        Autorizacao autorizadaPersistida = repository.save(autorizacaoMontada);
+        var autorizacaoMontada = mapper.toDomain(request);
+        var autorizadaPersistida = repository.save(autorizacaoMontada);
 
         log.info("Autorização DDA criada com sucesso. ID: {}, Empresa: {}", 
-                autorizadaPersistida.getIdAutorizacao().getIdAutorizacao(), 
+                autorizadaPersistida.getIdAutorizacao().getIdAutorizacao(),
                 autorizadaPersistida.getIdAutorizacaoEmpresa());
 
         return AutorizacaoCompletaResponseDto.from(autorizadaPersistida);
-    }
-
-    private void validarValorLimite(java.math.BigDecimal valor, java.math.BigDecimal valorLimite) {
-        if (valorLimite != null && valorLimite.compareTo(valor) < 0) {
-            log.warn("Tentativa de criação com valorLimite inválido. Limite: {}, Valor: {}", valorLimite, valor);
-            throw new BusinessException(
-                    "O valor limite não pode ser menor que o valor da autorização. Limite: " + valorLimite + ", Valor: " + valor);
-        }
-    }
-
-    private LocalDate trataDataFimVigencia(LocalDate dataFimVigencia, String codigoCanalContratacao) {
-        if (dataFimVigencia != null) {
-            return dataFimVigencia;
-        }
-
-        return switch (codigoCanalContratacao) {
-            case "C1" -> LocalDate.of(9999, 1, 1);
-            case "C2" -> LocalDate.of(9999, 4, 1);
-            case "C3" -> LocalDate.of(9999, 7, 1);
-            case "C4" -> LocalDate.of(9999, 10, 1);
-            case "C9" -> LocalDate.of(1990, 12, 31);
-            default -> LocalDate.of(9999, 1, 1);
-        };
     }
 }

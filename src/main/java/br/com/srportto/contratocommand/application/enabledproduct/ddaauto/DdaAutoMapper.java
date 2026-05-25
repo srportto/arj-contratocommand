@@ -38,41 +38,13 @@ public interface DdaAutoMapper {
     @AfterMapping
     default void afterMapping(CriarAutorizacaoRequest request, @MappingTarget Autorizacao autorizacao) {
 
-
-        var tipoStr = request.tipoProduto();
-        if (!TipoProduto.DDA_AUTO.name().equalsIgnoreCase(tipoStr)) {
-            throw new BusinessException(
-                "O campo 'tipoProduto' e invalido para este servico. Valores permitidos: DDA_AUTO." +
-                " Valor recebido: '" + tipoStr + "'"
-            );
-        }
-
-        autorizacao.setTipoProduto(TipoProduto.valueOf(tipoStr.toUpperCase()));
-
-        // Preenchimento PK e valores padrão para criação de nova autorização
-        var idUnicoContaContratante = autorizacao.getIdUnicoContaContratante();
-        var idParticaoConta = IdContaUUIDPartitionDistributor.getPartitionFast(idUnicoContaContratante);
-        var idAutorizacao = ReversibleUUIDv7.generate(idParticaoConta);
-
-        autorizacao.setIdAutorizacao(new IdAutorizacao());
-        autorizacao.getIdAutorizacao().setIdAutorizacao(idAutorizacao);
-        autorizacao.getIdAutorizacao().setIdParticaoConta(idParticaoConta);
-
-        autorizacao.setStatus(1); // ATIVO
-        autorizacao.setMotivoStatus("Autorizacao criada com sucesso (DDA Automatico)");
-        autorizacao.setDataInicioVigencia(LocalDate.now());
-
-        LocalDateTime agora = LocalDateTime.now();
-        autorizacao.setDataHoraInclusao(agora);
-        autorizacao.setDataHoraUltimaAtualizacao(agora);
-
-        autorizacao.setIndicadorTipoMensageria((byte) 0); // não utiliza mensageria
+        autorizacao.setTipoProduto(TipoProduto.valueOf(request.tipoProduto()));
 
         if (request.metadados() != null) {
             autorizacao.setMetadados(request.metadados().toString());
-        } else {
-            autorizacao.setMetadados("{}");
         }
+
+        autorizacao.inicializaCriacao(autorizacao);
     }
 
 }

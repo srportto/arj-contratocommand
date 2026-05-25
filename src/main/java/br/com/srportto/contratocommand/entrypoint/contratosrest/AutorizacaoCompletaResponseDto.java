@@ -46,7 +46,7 @@ public class AutorizacaoCompletaResponseDto {
     private Cancelamento cancelamento;
     private JsonNode metadados;
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     public static AutorizacaoCompletaResponseDto from(Autorizacao autorizacao) {
         return AutorizacaoCompletaResponseDto.builder()
@@ -82,7 +82,7 @@ public class AutorizacaoCompletaResponseDto {
         }
 
         try {
-            return OBJECT_MAPPER.readTree(metadados);
+            return MAPPER.readTree(metadados);
         } catch (Exception e) {
             return JsonNodeFactory.instance.objectNode();
         }

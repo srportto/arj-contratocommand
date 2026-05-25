@@ -1,5 +1,7 @@
 package br.com.srportto.contratocommand.domain.entities;
 
+import br.com.srportto.contratocommand.domain.utilities.IdContaUUIDPartitionDistributor;
+import br.com.srportto.contratocommand.domain.utilities.ReversibleUUIDv7;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -103,5 +105,34 @@ public class Autorizacao {
     @Column(name = "metadados", nullable = false, unique = false, columnDefinition = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)
     private String metadados;
+
+
+    public Autorizacao inicializaCriacao(Autorizacao autorizacao){
+
+        var idUnicoContaContratante = autorizacao.getIdUnicoContaContratante();
+        var idParticaoConta = IdContaUUIDPartitionDistributor.getPartitionFast(idUnicoContaContratante);
+        var idAutorizacao = ReversibleUUIDv7.generate(idParticaoConta);
+        var  dataHoraCorrente = LocalDateTime.now();
+        var dataCorrente = LocalDate.now();
+
+        // Preenchimento PK e valores padrão para criação de nova autorização
+        autorizacao.setIdAutorizacao(new IdAutorizacao());
+        autorizacao.getIdAutorizacao().setIdAutorizacao(idAutorizacao);
+        autorizacao.getIdAutorizacao().setIdParticaoConta(idParticaoConta);
+
+        autorizacao.setStatus(1); // ATIVO
+        autorizacao.setMotivoStatus("Autorizacao criada com sucesso");
+        autorizacao.setDataInicioVigencia(dataCorrente);
+        autorizacao.setDataHoraInclusao(dataHoraCorrente);
+        autorizacao.setDataHoraUltimaAtualizacao(dataHoraCorrente);
+
+        autorizacao.setIndicadorTipoMensageria((short) 0); // não utiliza mensageria
+
+        if( autorizacao.getDataFimVigencia() == null){
+            autorizacao.setDataFimVigencia(LocalDate.of(9999, 12, 31));
+        }
+
+        return autorizacao;
+    }
 
 }
