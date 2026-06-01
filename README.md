@@ -2,7 +2,7 @@
 
 🏗️ **API REST Java 25** para gerenciamento de autorizações de contratos e processamento de operações PIX automáticas com **arquitetura hexagonal**. Implementa **Strategy Pattern** para múltiplos produtos (PIX Automático, DDA Automático, Cartão Crédito) e suporta **particionamento temporal** de dados em PostgreSQL.
 
-## 📋 Sobre o Projeto
+## 📋 Sobre o Projetox
 
 O **Contrato Command** é um microserviço backend construído com **Spring Boot 4.0.4** seguindo princípios de **Domain-Driven Design (DDD)** e **arquitetura hexagonal**. É um exemplo de arquitetura corporativa escalável para gerenciar contratos de produtos financeiros com orquestração de operações e particionamento inteligente de dados.
 
