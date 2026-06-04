@@ -112,7 +112,7 @@ public class Autorizacao {
         var idUnicoContaContratante = autorizacao.getIdUnicoContaContratante();
         var idParticaoConta = IdContaUUIDPartitionDistributor.getPartitionFast(idUnicoContaContratante);
         var idAutorizacao = ReversibleUUIDv7.generate(idParticaoConta);
-        var  dataHoraCorrente = LocalDateTime.now();
+        var dataHoraCorrente = LocalDateTime.now();
         var dataCorrente = LocalDate.now();
 
         // Preenchimento PK e valores padrão para criação de nova autorização
@@ -125,7 +125,6 @@ public class Autorizacao {
         autorizacao.setDataInicioVigencia(dataCorrente);
         autorizacao.setDataHoraInclusao(dataHoraCorrente);
         autorizacao.setDataHoraUltimaAtualizacao(dataHoraCorrente);
-
         autorizacao.setIndicadorTipoMensageria((short) 0); // não utiliza mensageria
 
         if( autorizacao.getDataFimVigencia() == null){
