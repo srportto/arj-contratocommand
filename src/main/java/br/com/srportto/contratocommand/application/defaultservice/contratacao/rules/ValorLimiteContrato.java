@@ -1,13 +1,11 @@
 package br.com.srportto.contratocommand.application.defaultservice.contratacao.rules;
 
 import br.com.srportto.contratocommand.application.defaultservice.contratacao.ContratacaoRule;
-import br.com.srportto.contratocommand.domain.enums.TipoProduto;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.CriarAutorizacaoRequest;
 import br.com.srportto.contratocommand.shared.exceptions.BusinessException;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 @Component
 public class ValorLimiteContrato implements ContratacaoRule {
