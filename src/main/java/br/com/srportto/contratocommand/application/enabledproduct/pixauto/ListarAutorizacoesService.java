@@ -101,7 +101,7 @@ public class ListarAutorizacoesService {
      *
      * @param pagina número da página
      * @param tamanho tamanho da página
-     * @param ordenarPor string no formato "campo,direcao" (ex: "dataHoraInclusao,desc")
+     * @param ordenarPor string no formato "campo,direcao" (ex: "dataCriacao,desc")
      * @return Pageable configurado
      */
     private Pageable construirPageable(Integer pagina, Integer tamanho, String ordenarPor) {
@@ -111,7 +111,8 @@ public class ListarAutorizacoesService {
         if (ordenarPor != null && !ordenarPor.isBlank()) {
             String[] partes = ordenarPor.split(",");
             if (partes.length >= 1) {
-                campoOrdenacao = partes[0].trim();
+                // Mapear campo do DTO para campo da entidade
+                campoOrdenacao = mapearCampoDTO(partes[0].trim());
             }
             if (partes.length >= 2) {
                 try {
@@ -125,6 +126,25 @@ public class ListarAutorizacoesService {
 
         Sort sort = Sort.by(direcao, campoOrdenacao);
         return PageRequest.of(pagina, tamanho, sort);
+    }
+
+    /**
+     * Mapeia nomes de campos do DTO para nomes de campos da entidade.
+     * 
+     * @param campoDtoOuEntidade campo que pode vir do DTO ou ser já da entidade
+     * @return nome do campo na entidade Autorizacao
+     */
+    private String mapearCampoDTO(String campoDtoOuEntidade) {
+        return switch (campoDtoOuEntidade) {
+            case "dataCriacao" -> "dataHoraInclusao";
+            case "valor" -> "valorAutorizacao";
+            case "idAutorizacao" -> "idAutorizacao.idAutorizacao";
+            case "dataInicioVigencia" -> "dataInicioVigencia";
+            case "dataFimVigencia" -> "dataFimVigencia";
+            case "idPessoaRecebedora" -> "idPessoaRecebedora";
+            // Se for campo da entidade, retorna como está
+            default -> campoDtoOuEntidade;
+        };
     }
 
     /**
