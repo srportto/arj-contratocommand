@@ -1,6 +1,6 @@
 # Contrato Command
 
-🏗️ **API REST Java 25** para gerenciamento de autorizações de contratos e processamento de operações PIX automáticas com **arquitetura hexagonal**. Implementa **Strategy Pattern** para múltiplos produtos (PIX Automático, DDA Automático, Cartão Crédito) e suporta **particionamento temporal** de dados em PostgreSQL.
+🏗️ **API REST Java 25** para gerenciamento de autorizações de contratos e processamento de operações PIX automáticas com **arquitetura hexagonal**. Implementa **Strategy Pattern** para múltiplos produtos (PIX Automático e DDA Automático) e suporta **particionamento temporal** de dados em PostgreSQL.
 
 ## 📋 Sobre o Projetox
 
@@ -8,10 +8,10 @@ O **Contrato Command** é um microserviço backend construído com **Spring Boot
 
 ### Funcionalidades Principais
 - ✅ **Autorizações de Contratos**: Criação, listagem, cancelamento e orquestração
-- ✅ **Transações PIX Automáticas**: Processamento completo via `PixAutoAutorizacaoService`
+- ✅ **Transações PIX Automáticas**: Processamento completo via `PixAutoService` + `CriarPixAutoUseCase`
 - ✅ **DDA Automático**: Use cases de criação e cancelamento com validações robustas
 - ✅ **Orquestração Multi-Produto**: Strategy Pattern com interface `ContratacaoService`
-- ✅ **Suporte a Múltiplos Produtos**: PIX_AUTO, DDA_AUTO, CARTAO_CREDITO (extensível)
+- ✅ **Suporte a Múltiplos Produtos**: PIX_AUTO, DDA_AUTO (extensível via interface ContratacaoService)
 - ✅ **Particionamento Temporal**: Dados particionados por conta com PostgreSQL + pg_partman + pg_cron
 - ✅ **Validações em Cascata**: Validadores customizados + regras de negócio
 - ✅ **Tratamento Centralizado de Exceções**: `BusinessException` (422), `ApplicationException` (500)
@@ -36,67 +36,37 @@ O **Contrato Command** é um microserviço backend construído com **Spring Boot
 
 ```
 src/main/java/br/com/srportto/contratocommand/
-├── ContratocommandApplication.java          # Classe principal Spring Boot (void main)
-│
-├── application/                              # Layer Application (Orquestração & Use Cases)
-│   ├── ContratacaoService.java              # Interface Strategy para produtos
-│   ├── ContratacaoOrquestradorService.java  # Orquestrador central de criação/cancelamento
-│   │
-│   ├── pixauto/                             # Use case PIX Auto
-│   │   ├── PixAutoAutorizacaoService.java   # Orquestração completa de negócio
-│   │   ├── PixAutoAutorizacaoRepository.java# JPA Repository com queries customizadas
-│   │   ├── PixAutoAutorizacaoMapper.java    # MapStruct: DTO ↔ Entity com @AfterMapping
-│   │
-│   └── ddaauto/                             # Use case DDA Auto (novo)
-│       ├── usecases/
-│       │   ├── CriarDdaAutoUseCase.java     # Use case: criar DDA automático
-│       │   ├── CancelarDdaAutoUseCase.java  # Use case: cancelar DDA automático
-│
-├── domain/                                   # Domain Layer (Lógica Pura, Sem Frameworks)
-│   ├── entities/                            # Entidades do domínio
-│   │   ├── Autorizacao.java                 # Entidade com composite PK (UUID + partição)
-│   │   └── Cancelamento.java                # Entidade para registro de cancelamentos
-│   │
-│   ├── enums/                               # Enumerações do domínio
-│   │   ├── Tipos/
-│   │   │   └── tipoEnum/
-│   │   │       └── TipoProduto.java         # PIX_AUTO, DDA_AUTO, CARTAO_CREDITO (extensível)
-│   │   ├── StatusAutorizacao.java           # ATIVO, CANCELADO, EXPIRADO, PENDENTE
-│   │   ├── Motivos/
-│   │   │   └── motivoStatusEnum/
-│   │   │       └── MotivoStatusAutorizacao.java # Transições de estado
-│   │   └── CanaisConhecidosEnum.java        # Canais de contratação conhecidos
-│   │
-│   ├── model/                               # Modelos de domínio
-│   │   ├── ContratoBase.java                # Modelo abstrato base
-│   │   └── Autorizacao.java                 # Modelo alternativo
-│   │
-│   └── utilities/                           # Utilitários de domínio (sem frameworks)
-│       ├── ControleExpurgoAutorizacao.java  # Cálculo de partições (escrita vs drop)
-│       ├── IdContaUUIDPartitionDistributor.java # Distribuição de UUIDs com partição
-│       └── ReversibleUUIDv7.java            # UUIDs reversíveis com partição embutida
-│
-├── entrypoint/                               # Layer Entrypoint (REST Inbound Adapters)
-│   ├── AutorizacaoController.java           # Controller principal
-│   │   ├── GET  /api/autorizacao/olaMundo   # Health check
-│   │   ├── GET  /api/autorizacao/ativas     # Listar ativas
-│   │   ├── POST /api/autorizacao            # Criar (multiforma)
-│   │   └── PATCH /api/autorizacao/{id}/cancelar # Cancelar
-│   │
-│   └── contratosrest/                       # DTOs de Requisição/Resposta
-│       ├── CriarAutorizacaoRequest.java     # Record @Valid imutável
-│       ├── CancelarAutorizacaoRequest.java  # Request para cancelamento
-│       ├── AutorizacaoCompletaResponseDto.java # DTO resposta com JSONB + metadados
-│       └── componentescontrato/              # Componentes específicos
-│
-└── shared/                                    # Shared Infrastructure Layer
-    ├── configurations/                       # Configs Spring, autoconfigurations
-    ├── exceptions/                          # Exceções customizadas
-    │   ├── BusinessException.java           # 422 - Violação de regra de negócio
-    │   └── ApplicationException.java        # 500 - Erros inesperados/sistemas
-    ├── external/                            # Integrações externas
-    ├── interceptors/                        # Interceptors HTTP, middleware
-    └── logging/                             # Configure loggers estruturados
+├── ContratocommandApplication.java
+├── application/
+│   ├── defaultservice/
+│   │   ├── contratacao/      # ContratacaoOrquestradorService, ContratacaoService (Strategy),
+│   │   │   │                 # ContratacaoRule, ContratacaoValidator
+│   │   │   └── rules/        # DataFimVigenciaInvalida, ValorLimiteContrato, MetadadoRule
+│   │   └── cancelamento/     # CancelamentoOrquestradorService, CancelamentoService,
+│   │       │                 # CancelamentoRule, CancelamentoValidator
+│   │       └── rules/        # TipoProdutoCancelamento
+│   └── enabledproduct/
+│       ├── pixauto/          # PixAutoService, PixAutoMapper, PixAutoRepository, ListarAutorizacoesService
+│       │   └── usecases/     # CriarPixAutoUseCase, CancelarPixAutoUseCase
+│       └── ddaauto/          # DdaAutoService, DdaAutoMapper, DdaAutoRepository
+│           └── usecases/     # CriarDdaAutoUseCase, CancelarDdaAutoUseCase
+├── domain/
+│   ├── entities/             # Autorizacao, Cancelamento, IdAutorizacao
+│   ├── enums/                # TipoProduto, StatusAutorizacao, MotivoStatusAutorizacao,
+│   │                         # CanaisConhecidosEnum, TipoConta
+│   ├── converters/           # TipoProdutoConverter
+│   ├── model/                # ContratoBase
+│   └── utilities/            # ControleExpurgoAutorizacao, IdContaUUIDPartitionDistributor,
+│                             # ReversibleUUIDv7, AchaQtdeSemanas
+├── entrypoint/
+│   ├── AutorizacaoController.java
+│   └── contratosrest/        # CriarAutorizacaoRequest, CancelarAutorizacaoRequestDto,
+│                             # AutorizacaoCompletaResponseDto, AutorizacaoResumidaResponseDto,
+│                             # PaginacaoResponseDto
+└── shared/
+    ├── exceptions/           # BusinessException (422), ApplicationException (500)
+    ├── interceptors/api/     # ApiExceptionHandler + DTOs de erro
+    └── validationsetup/      # Rule, Validator
 ```
 
 ## 🏗️ Arquitetura Hexagonal (Ports & Adapters)
@@ -108,7 +78,7 @@ O projeto segue **arquitetura hexagonal** com camadas bem isoladas e responsabil
 | Camada | Pacote | Responsabilidade | Exemplos |
 |--------|--------|------------------|----------|
 | **Entrypoint** | `entrypoint/` | Adaptadores de entrada (REST Controllers) | `AutorizacaoController`, DTOs `Request/Response` |
-| **Application** | `application/` | Orquestração de casos de uso e regras de negócio | `PixAutoAutorizacaoService`, `ContratacaoOrquestradorService`, `Mappers` |
+| **Application** | `application/` | Orquestração de casos de uso e regras de negócio | `PixAutoService`, `ContratacaoOrquestradorService`, `Mappers` |
 | **Domain** | `domain/` | Lógica pura independente de frameworks | `Entidades`, `Enums`, `Utilities`, regras de negócio |
 | **Shared** | `shared/` | Infraestrutura compartilhada | `Exceções`, `Configurações`, `Interceptadores` |
 
@@ -128,14 +98,13 @@ O projeto segue **arquitetura hexagonal** com camadas bem isoladas e responsabil
 │                    APPLICATION (Services)                       │
 │   ┌────────────────────────────────────────────────────────┐   │
 │   │ ContratacaoOrquestradorService: orquestra fluxos       │   │
-│   │ PixAutoAutorizacaoService: lógica PIX Auto             │   │
+│   │ PixAutoService: lógica PIX Auto                        │   │
 │   │ MapStruct Mapper: DTO ↔ Entity conversion              │   │
 │   └────────────────────────────────────────────────────────┘   │
 │   ┌────────────────────────────────────────────────────────┐   │
 │   │ Strategy Pattern via ContratacaoService (multiproduct) │   │
-│   │ - PIX_AUTO → PixAutoAutorizacaoService                 │   │
+│   │ - PIX_AUTO → PixAutoService                            │   │
 │   │ - DDA_AUTO → CriarDdaAutoUseCase / CancelarDdaAuto     │   │
-│   │ - CARTAO_CREDITO → (extensível)                        │   │
 │   └────────────────────────────────────────────────────────┘   │
 └────────────────────────┬────────────────────────────────────────┘
                          │ BusinessException (422)
@@ -156,7 +125,7 @@ O projeto segue **arquitetura hexagonal** com camadas bem isoladas e responsabil
 ┌─────────────────────────────────────────────────────────────────┐
 │                    PERSISTENCE (JPA/PostgreSQL)                 │
 │   ┌────────────────────────────────────────────────────────┐   │
-│   │ PixAutoAutorizacaoRepository extends JpaRepository     │   │
+│   │ PixAutoRepository extends JpaRepository               │   │
 │   │ Partitionable: (id_autorizacao, id_particao_conta)     │   │
 │   │ Database: PostgreSQL 16+ com pg_partman + pg_cron      │   │
 │   └────────────────────────────────────────────────────────┘   │
@@ -167,8 +136,8 @@ O projeto segue **arquitetura hexagonal** com camadas bem isoladas e responsabil
 
 | Padrão | Implementação | Benefício |
 |--------|---------------|-----------|
-| **Strategy Pattern** | Interface `ContratacaoService` + Factory `ProdutoStrategyFactory` | Adicionar novo produto sem modificar código (Open/Closed) |
-| **Repository Pattern** | `PixAutoAutorizacaoRepository extends JpaRepository` | Abstração de persistência independente de DB |
+| **Strategy Pattern** | `List<ContratacaoService>` injetada em `ContratacaoOrquestradorService` | Adicionar novo produto sem modificar código (Open/Closed) |
+| **Repository Pattern** | `PixAutoRepository extends JpaRepository` | Abstração de persistência independente de DB |
 | **Mapper Pattern** | MapStruct com `@Mapper` + `@AfterMapping` | Conversão automática e typesafe DTO ↔ Entity |
 | **Composite Primary Key** | `(UUID idAutos, Integer idParticaoConta)` em Autorizacao | Particionamento temporal sem queries adicionais |
 | **Value Objects** | `IdAutorizacao` record | Encapsulação de chave composta |
@@ -293,14 +262,13 @@ mvn clean test jacoco:report
 
 ### AutorizacaoController
 
-| Método | Endpoint | Descrição | Resposta | Status |
-|--------|----------|-----------|----------|--------|
-| **GET** | `/api/autorizacao/olaMundo` | Health check simples | `String: "Olá, mundo!"` | 200 |
-| **GET** | `/api/autorizacao/ativas` | Listar autorizações ativas | `List<AutorizacaoCompletaResponseDto>` | 200 |
-| **POST** | `/api/autorizacao` | Criar nova autorização (multiproduct) | `AutorizacaoCreatedResponse` | 201 |
-| **PATCH** | `/api/autorizacao/{id}/cancelar` | Cancelar autorização (programado) | `AutorizacaoCompletaResponseDto` | 200 |
+| Método | Endpoint | Descrição | Status |
+|--------|----------|-----------|--------|
+| **POST** | `/api/autorizacoes` | Criar autorização (multi-produto) | 201 |
+| **PATCH** | `/api/autorizacoes/{idAutorizacao}/cancelar` | Cancelar (header `tipoProduto` obrigatório) | 200 |
+| **GET** | `/api/autorizacoes/listar` | Listar paginado por conta | 200 |
 
-### Criar Autorização - Request (POST `/api/autorizacao`)
+### Criar Autorização - Request (POST `/api/autorizacoes`)
 
 ```json
 {
@@ -330,7 +298,7 @@ mvn clean test jacoco:report
 | Campo | Tipo | Validação | HTTP se inválido |
 |-------|------|-----------|------------------|
 | `dataFimVigencia` | LocalDate | Não pode estar no passado | 422 |
-| `tipoProduto` | Enum | PIX_AUTO, DDA_AUTO, CARTAO_CREDITO | 400 |
+| `tipoProduto` | Enum | PIX_AUTO, DDA_AUTO | 400 |
 | `valor` | BigDecimal | @NotNull obrigatório | 400 |
 | `frequencia` | Integer | @Min(1) @Max(4) (semanal a trimestral) | 400 |
 | `quantidadeDividasCiclo` | Integer | @Min(1) obrigatório | 400 |
@@ -359,7 +327,7 @@ mvn clean test jacoco:report
   "status": 400,
   "error": "Bad Request",
   "message": "Validation failed: frequencia must be between 1 and 4",
-  "path": "/api/autorizacao"
+  "path": "/api/autorizacoes"
 }
 ```
 
@@ -370,7 +338,7 @@ mvn clean test jacoco:report
   "status": 422,
   "error": "Unprocessable Content",
   "message": "Data de fim de vigência não pode estar no passado",
-  "path": "/api/autorizacao"
+  "path": "/api/autorizacoes"
 }
 ```
 
@@ -381,11 +349,11 @@ mvn clean test jacoco:report
   "status": 500,
   "error": "Internal Server Error",
   "message": "Erro ao processar autorização",
-  "path": "/api/autorizacao"
+  "path": "/api/autorizacoes"
 }
 ```
 
-### Cancelar Autorização - Request (PATCH `/api/autorizacao/{id}/cancelar`)
+### Cancelar Autorização - Request (PATCH `/api/autorizacoes/{idAutorizacao}/cancelar`)
 
 ```json
 {
@@ -401,23 +369,19 @@ mvn clean test jacoco:report
 ### ✅ API REST Completa Multi-Produto
 
 **Endpoints implementados com Strategy Pattern:**
-- `POST /api/autorizacao` - Criação com orquestrador multi-produto
-- `GET /api/autorizacao/ativas` - Listagem com metadados JSON (JSONB)
-- `PATCH /api/autorizacao/{id}/cancelar` - Cancelamento programado
-- `GET /api/autorizacao/olaMundo` - Health check
+- `POST /api/autorizacoes` - Criação com orquestrador multi-produto
+- `GET /api/autorizacoes/listar` - Listagem paginada por conta
+- `PATCH /api/autorizacoes/{idAutorizacao}/cancelar` - Cancelamento programado
 
 ### ✅ Strategy Pattern para Múltiplos Produtos
 
 **Produtos suportados:**
-- **PIX_AUTO** → `PixAutoAutorizacaoService`
-- **DDA_AUTO** → `CriarDdaAutoUseCase` / `CancelarDdaAutoUseCase`
-- **CARTAO_CREDITO** → (extensível)
+- **PIX_AUTO** → `PixAutoService` + `CriarPixAutoUseCase`
+- **DDA_AUTO** → `DdaAutoService` + `CriarDdaAutoUseCase` / `CancelarDdaAutoUseCase`
 
-**Factory Pattern:**
-```java
-ProdutoStrategyFactory factory = new ProdutoStrategyFactory();
-ContratacaoService strategy = factory.getEstrategia(TipoProduto.PIX_AUTO);
-```
+**Seleção de produto (sem factory):**
+
+`ContratacaoOrquestradorService` recebe `List<ContratacaoService>` via injeção Spring e itera chamando `validaContratacaoSuportada(request)` — o primeiro que retornar `true` é escolhido. Nenhuma `ProdutoStrategyFactory` existe em `src/` (os arquivos em `docs/strategyProduto/` são apenas exemplos didáticos).
 
 ### ✅ DTOs com Records Imutáveis (Java 25)
 
@@ -473,7 +437,7 @@ public record IdAutorizacao(
 **Mapper com customização via `@AfterMapping`:**
 ```java
 @Mapper(componentModel = "spring")
-public interface PixAutoAutorizacaoMapper {
+public interface PixAutoMapper {
     @Mapping(target = "id", ignore = true)
     Autorizacao toEntity(CriarAutorizacaoRequest dto);
     
@@ -525,7 +489,7 @@ Integer particaoDrop = ControleExpurgoAutorizacao.obterParticaoExpurgoDrop();
 ```java
 @Service
 @Transactional
-public class PixAutoAutorizacaoService {
+public class PixAutoService {
     public void criar(CriarAutorizacaoRequest request) {
         // Dentro de transação ACID
     }
@@ -599,7 +563,7 @@ logging:
 -- Criar partição (feito automaticamente por pg_partman)
 CREATE TABLE autorizacoes (
     id_autorizacao UUID,
-    id_particao_conta INTEGER CHECK (id_particao_conta >= 1 AND id_particao_conta <= 100),
+    id_particao_conta INTEGER CHECK (id_particao_conta >= 900 AND id_particao_conta <= 999),
     data_criacao TIMESTAMP NOT NULL DEFAULT NOW(),
     valor DECIMAL(19,2) NOT NULL,
     tipoProduto VARCHAR(50),
@@ -607,7 +571,7 @@ CREATE TABLE autorizacoes (
     PRIMARY KEY (id_autorizacao, id_particao_conta)
 ) PARTITION BY RANGE (id_particao_conta);
 
--- Criar partições iniciais (1-25, 26-50, 51-75, 76-100)
+-- Criar partições iniciais (900-924, 925-949, 950-974, 975-999)
 SELECT pg_partman.partition_table('public.autorizacoes', 'id_particao_conta');
 ```
 
@@ -664,14 +628,13 @@ mvn clean test jacoco:report
 
 ```
 src/test/java/br/com/srportto/contratocommand/
-├── ContratocommandApplicationTests.java     # Teste de contexto Spring
+├── ContratocommandApplicationTests.java
 ├── application/
-│   ├── PixAutoAutorizacaoServiceTest.java   # Testes unitários do serviço
-│   └── ContratacaoOrquestradorServiceTest.java
-├── domain/
-│   └── utilities/
-│       ├── ControleExpurgoAutorizacaoTest.java
-│       └── IdContaUUIDPartitionDistributorTest.java
+│   ├── pixauto/PixAutoAutorizacaoServiceTest.java
+│   └── enabledproduct/pixauto/ListarAutorizacoesServiceTest.java
+└── domain/utilities/
+    ├── ControleExpurgoAutorizacaoTest.java
+    └── GeraDatasPorParticao.java
 ```
 
 ### Testes de Integração
@@ -693,10 +656,10 @@ mvn test -P '!integration'
 class PixAutoAutorizacaoServiceTest {
     
     @Mock
-    private PixAutoAutorizacaoRepository repository;
+    private PixAutoRepository repository;
     
     @InjectMocks
-    private PixAutoAutorizacaoService service;
+    private PixAutoService service;
     
     @Test
     void testCriarAutorizacao() {
@@ -734,7 +697,7 @@ class PixAutoAutorizacaoServiceTest {
 <dependency>
     <groupId>org.postgresql</groupId>
     <artifactId>postgresql</artifactId>
-    <version>42.7.1</version>
+    <scope>runtime</scope>
 </dependency>
 
 <!-- Lombok -->
@@ -763,8 +726,8 @@ class PixAutoAutorizacaoServiceTest {
 
 | Padrão | Implementação | Benefício |
 |--------|---------------|-----------|
-| **Strategy Pattern** | `ContratacaoService` interface + `ProdutoStrategyFactory` | Multiplidade de produtos sem modificar código existente |
-| **Repository Pattern** | `PixAutoAutorizacaoRepository extends JpaRepository` | Abstração de persistência |
+| **Strategy Pattern** | `List<ContratacaoService>` injetada em `ContratacaoOrquestradorService` | Multiplicidade de produtos sem modificar código existente |
+| **Repository Pattern** | `PixAutoRepository extends JpaRepository` | Abstração de persistência |
 | **Mapper Pattern** | MapStruct com `@Mapper` + `@AfterMapping` | Conversão typesafe automática DTO ↔ Entity |
 | **Composite Primary Key** | `(UUID, Integer)` em `IdAutorizacao` | Particionamento eficiente sem queries adicionais |
 | **Value Objects** | Records imutáveis para DTOs e IDs | Imutabilidade + segurança de tipo |
@@ -777,11 +740,11 @@ class PixAutoAutorizacaoServiceTest {
 | Elemento | Padrão | Exemplos |
 |----------|--------|----------|
 | **Entidades** | Substantivo singular | `Autorizacao`, `Cancelamento` |
-| **Services** | `{Nome}Service` | `PixAutoAutorizacaoService`, `ContratacaoOrquestradorService` |
-| **UseCases** | `{Operacao}UseCase` | `CriarDdaAutoUseCase`, `CancelarDdaAutoUseCase` |
-| **Repositories** | `{Entidade}Repository` | `PixAutoAutorizacaoRepository` |
+| **Services** | `{Nome}Service` | `PixAutoService`, `ContratacaoOrquestradorService` |
+| **UseCases** | `{Operacao}UseCase` | `CriarPixAutoUseCase`, `CriarDdaAutoUseCase`, `CancelarDdaAutoUseCase` |
+| **Repositories** | `{Entidade}Repository` | `PixAutoRepository` |
 | **Utilities** | `{Nome}Distributor` ou `{Nome}Controle` | `IdContaUUIDPartitionDistributor`, `ControleExpurgoAutorizacao` |
-| **Mappers** | `{Entidade}Mapper` | `PixAutoAutorizacaoMapper` |
+| **Mappers** | `{Entidade}Mapper` | `PixAutoMapper` |
 | **Controllers** | `{Recurso}Controller` | `AutorizacaoController` |
 | **Request DTOs** | `{Operacao}{Entidade}Request` | `CriarAutorizacaoRequest`, `CancelarAutorizacaoRequest` |
 | **Response DTOs** | `{Entidade}ResponseDto` ou `{Entidade}CompletaResponseDto` | `AutorizacaoCompletaResponseDto` |
