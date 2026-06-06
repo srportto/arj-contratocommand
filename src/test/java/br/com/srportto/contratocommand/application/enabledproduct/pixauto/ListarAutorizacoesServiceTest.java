@@ -243,5 +243,29 @@ class ListarAutorizacoesServiceTest {
         assertEquals(autorizacao1.getDataFimVigencia(), dto.getDataFimVigencia());
         assertEquals(autorizacao1.getIdPessoaRecebedora(), dto.getIdPessoaRecebedora());
         assertEquals(autorizacao1.getValorAutorizacao(), dto.getValor());
+        // status (código 1) deve ser traduzido para o nome do enum
+        assertEquals("RECEBIDA", dto.getStatus());
+    }
+
+    @Test
+    @DisplayName("Deve retornar o status como nome do enum para cada item da página")
+    void testStatusRetornadoPorItem() {
+        // Arrange: autorizacao1 = status 1 (RECEBIDA), autorizacao2 = status 4 (ATIVA)
+        List<Autorizacao> autorizacoes = Arrays.asList(autorizacao1, autorizacao2);
+        Page<Autorizacao> pagina = new PageImpl<>(autorizacoes, PageRequest.of(0, 20), 2);
+
+        when(pixAutoRepository.findByIdUnicoContaContratante(
+                eq(idUnicoContaContratante),
+                any(Pageable.class)))
+                .thenReturn(pagina);
+
+        // Act
+        PaginacaoResponseDto<AutorizacaoResumidaResponseDto> resultado =
+            listarAutorizacoesService.listar(idUnicoContaContratante, null, 0, 20, null);
+
+        // Assert: cada item reflete seu próprio status
+        assertEquals(2, resultado.getConteudo().size());
+        assertEquals("RECEBIDA", resultado.getConteudo().get(0).getStatus());
+        assertEquals("ATIVA", resultado.getConteudo().get(1).getStatus());
     }
 }
