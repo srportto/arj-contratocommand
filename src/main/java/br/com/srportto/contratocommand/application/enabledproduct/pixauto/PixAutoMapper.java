@@ -5,16 +5,10 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import br.com.srportto.contratocommand.domain.entities.Autorizacao;
-import br.com.srportto.contratocommand.domain.entities.IdAutorizacao;
 import br.com.srportto.contratocommand.domain.enums.TipoProduto;
-import br.com.srportto.contratocommand.domain.utilities.IdContaUUIDPartitionDistributor;
-import br.com.srportto.contratocommand.domain.utilities.ReversibleUUIDv7;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.CriarAutorizacaoRequest;
-import br.com.srportto.contratocommand.shared.exceptions.BusinessException;
 
 @Mapper(componentModel = "spring")
 public interface PixAutoMapper {

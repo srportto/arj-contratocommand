@@ -1,13 +1,10 @@
 package br.com.srportto.contratocommand.application.defaultservice.cancelamento.rules;
 
 import br.com.srportto.contratocommand.application.defaultservice.cancelamento.CancelamentoRule;
-import br.com.srportto.contratocommand.application.defaultservice.contratacao.ContratacaoRule;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.CancelarAutorizacaoRequestDto;
-import br.com.srportto.contratocommand.entrypoint.contratosrest.CriarAutorizacaoRequest;
 import br.com.srportto.contratocommand.shared.exceptions.BusinessException;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 
 @Component
 public class TipoProdutoCancelamento implements CancelamentoRule {

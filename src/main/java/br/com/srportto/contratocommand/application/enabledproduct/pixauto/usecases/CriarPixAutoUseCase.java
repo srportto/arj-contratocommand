@@ -3,17 +3,14 @@ package br.com.srportto.contratocommand.application.enabledproduct.pixauto.useca
 import br.com.srportto.contratocommand.application.defaultservice.contratacao.ContratacaoValidator;
 import br.com.srportto.contratocommand.application.enabledproduct.pixauto.PixAutoMapper;
 import br.com.srportto.contratocommand.application.enabledproduct.pixauto.PixAutoRepository;
-import br.com.srportto.contratocommand.domain.entities.Autorizacao;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.AutorizacaoCompletaResponseDto;
 import br.com.srportto.contratocommand.entrypoint.contratosrest.CriarAutorizacaoRequest;
-import br.com.srportto.contratocommand.shared.exceptions.BusinessException;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 
 @Component
 @AllArgsConstructor

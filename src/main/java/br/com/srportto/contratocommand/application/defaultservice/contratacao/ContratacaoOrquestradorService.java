@@ -5,7 +5,6 @@ import br.com.srportto.contratocommand.entrypoint.contratosrest.CriarAutorizacao
 import br.com.srportto.contratocommand.shared.exceptions.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
