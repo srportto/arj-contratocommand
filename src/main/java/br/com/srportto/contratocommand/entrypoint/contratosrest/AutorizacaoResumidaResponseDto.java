@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import br.com.srportto.contratocommand.domain.entities.Autorizacao;
+import tools.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,6 +29,7 @@ public class AutorizacaoResumidaResponseDto {
     private UUID idPessoaRecebedora;
     private String nomeRecebedor;
     private BigDecimal valor;
+    private JsonNode metadado;
 
     /**
      * Converte uma entidade Autorizacao para DTO resumido.
@@ -36,6 +38,16 @@ public class AutorizacaoResumidaResponseDto {
      * @return DTO resumido com campos mínimos
      */
     public static AutorizacaoResumidaResponseDto from(Autorizacao autorizacao) {
+        JsonNode metadadoNode = null;
+        if (autorizacao.getMetadados() != null) {
+            try {
+                metadadoNode = new tools.jackson.databind.ObjectMapper()
+                        .readTree(autorizacao.getMetadados());
+            } catch (Exception e) {
+                metadadoNode = null;
+            }
+        }
+
         return AutorizacaoResumidaResponseDto.builder()
                 .idAutorizacao(autorizacao.getIdAutorizacao().getIdAutorizacao())
                 .dataCriacao(autorizacao.getDataHoraInclusao())
@@ -44,6 +56,7 @@ public class AutorizacaoResumidaResponseDto {
                 .idPessoaRecebedora(autorizacao.getIdPessoaRecebedora())
                 .nomeRecebedor(null) // Placeholder: integração posterior com serviço de pessoas
                 .valor(autorizacao.getValorAutorizacao())
+                .metadado(metadadoNode)
                 .build();
     }
 }
